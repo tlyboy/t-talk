@@ -1,3 +1,3 @@
 <template>
-  <div>Tauri Vue Starter</div>
+  <div>T-Talk</div>
 </template>

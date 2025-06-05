@@ -3421,6 +3421,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "t-talk"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+ "tauri",
+ "tauri-build",
+ "tauri-plugin-opener",
+]
+
+[[package]]
 name = "tao"
 version = "0.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3714,17 +3725,6 @@ dependencies = [
  "urlpattern",
  "uuid",
  "walkdir",
-]
-
-[[package]]
-name = "tauri-vue-starter"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
- "tauri",
- "tauri-build",
- "tauri-plugin-opener",
 ]
 
 [[package]]

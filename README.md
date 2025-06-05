@@ -19,7 +19,7 @@
 1. 克隆项目：
 
    ```bash
-   git clone https://github.com/tlyboy/tauri-vue-starter.git my-tauri-app
+   git clone https://github.com/tlyboy/t-talk.git my-tauri-app
    cd my-tauri-app
    ```
 
