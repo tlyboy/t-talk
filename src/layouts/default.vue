@@ -1,16 +1,46 @@
+<script setup lang="ts">
+import logo from '@/assets/images/logo.png'
+</script>
+
 <template>
-  <div class="flex h-full flex-col items-center justify-center gap-4">
-    <RouterView />
+  <div class="flex h-full">
+    <div class="flex flex-col justify-between bg-white p-4 dark:bg-black">
+      <div class="flex flex-col items-center gap-4 text-xl">
+        <img :src="logo" alt="logo" class="h-9 w-9" />
 
-    <div class="flex items-center gap-2 text-xl">
-      <a
-        class="i-carbon-logo-github icon-btn"
-        href="https://github.com/tlyboy/t-talk"
-        target="_blank"
-        rel="noopener noreferrer"
-      ></a>
+        <RouterLink
+          to="/"
+          :class="{ 'text-[#3498db]': $route.path === '/' }"
+          class="icon-btn i-carbon-chat"
+        ></RouterLink>
 
-      <DarkToggle />
+        <RouterLink
+          to="/user"
+          :class="{ 'text-[#3498db]': $route.path === '/user' }"
+          class="icon-btn i-carbon-user"
+        ></RouterLink>
+      </div>
+
+      <div class="flex flex-col items-center gap-4 text-xl">
+        <a
+          class="i-carbon-logo-github icon-btn"
+          href="https://github.com/tlyboy/t-talk"
+          target="_blank"
+          rel="noopener noreferrer"
+        ></a>
+
+        <DarkToggle />
+
+        <RouterLink
+          to="/settings"
+          :class="{ 'text-[#3498db]': $route.path === '/settings' }"
+          class="icon-btn i-carbon-settings"
+        ></RouterLink>
+      </div>
+    </div>
+
+    <div class="flex-1">
+      <RouterView />
     </div>
   </div>
 </template>
