@@ -9,7 +9,7 @@ const router = createRouter({
 
 const whiteList = ['/login', '/settings']
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _, next) => {
   const userStore = useUserStore()
 
   if (!whiteList.includes(to.path) && !userStore.id) {
