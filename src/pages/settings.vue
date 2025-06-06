@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const settingsStore = useSettingsStore()
 const userStore = useUserStore()
+const router = useRouter()
 
 const formRef = useTemplateRef('formRef')
 
@@ -43,6 +44,8 @@ const logout = () => {
   userStore.id = ''
   userStore.username = ''
   userStore.password = ''
+  ElMessage.success('退出登录成功')
+  router.push('/login')
 }
 </script>
 

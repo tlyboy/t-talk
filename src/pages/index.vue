@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Shiki from '@shikijs/markdown-it'
 import MarkdownIt from 'markdown-it'
+import MarkdownItCopyCode, { useCopyCode } from 'markdown-it-copy-code'
+import 'markdown-it-copy-code/styles/base.css'
+import 'markdown-it-copy-code/styles/medium.css'
 
 const md = MarkdownIt()
 
@@ -18,6 +21,7 @@ const initMd = async () => {
       },
     }),
   )
+  md.use(MarkdownItCopyCode, {})
 
   const res = await fetch('/README.md')
 
@@ -38,6 +42,10 @@ const handleEnter = async (event: KeyboardEvent) => {
     })
   }
 }
+
+onMounted(() => {
+  useCopyCode()
+})
 </script>
 
 <template>
