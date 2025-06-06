@@ -7,4 +7,16 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
+const whiteList = ['/login', '/settings']
+
+router.beforeEach((to, from, next) => {
+  const userStore = useUserStore()
+
+  if (!whiteList.includes(to.path) && !userStore.id) {
+    next('/login')
+  } else {
+    next()
+  }
+})
+
 export default router

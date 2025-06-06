@@ -9,7 +9,7 @@ const text = ref('')
 
 const resultRef = useTemplateRef('resultRef')
 
-onMounted(async () => {
+const initMd = async () => {
   md.use(
     await Shiki({
       themes: {
@@ -22,7 +22,9 @@ onMounted(async () => {
   const res = await fetch('/README.md')
 
   result.value = md.render(await res.text())
-})
+}
+
+initMd()
 
 const handleEnter = async (event: KeyboardEvent) => {
   if (event.key === 'Enter' && !event.shiftKey) {
