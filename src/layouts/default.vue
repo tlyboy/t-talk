@@ -39,8 +39,12 @@ import logo from '@/assets/images/logo.png'
       </div>
     </div>
 
-    <div class="flex-1">
-      <RouterView />
+    <div class="flex-1 overflow-hidden">
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
   </div>
 </template>
