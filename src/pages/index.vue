@@ -322,7 +322,10 @@ onActivated(() => {
 
 <template>
   <div class="flex h-full flex-col justify-between">
-    <div ref="resultRef" class="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
+    <div
+      ref="resultRef"
+      class="flex flex-1 flex-col gap-2 overflow-y-auto bg-[#F3F3F3] p-4 dark:bg-[#111111]"
+    >
       <div
         class="flex gap-2"
         v-for="(result, index) in results"
