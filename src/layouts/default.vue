@@ -4,7 +4,9 @@ import logo from '@/assets/images/logo.png'
 
 <template>
   <div class="flex h-full">
-    <div class="flex flex-col justify-between bg-white p-4 dark:bg-black">
+    <div
+      class="flex flex-col justify-between border-r border-[#E7E7E7] bg-[#EDEDED] p-4 dark:border-[#1D1D1D] dark:bg-[#121212]"
+    >
       <div class="flex flex-col items-center gap-4 text-xl">
         <img :src="logo" alt="logo" class="h-9 w-9" />
 

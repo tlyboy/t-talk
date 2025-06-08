@@ -26,7 +26,7 @@ const md = MarkdownIt({
 
 const originalRender =
   md.renderer.rules.html_block ||
-  function (tokens, idx, options, env, self) {
+  function (tokens, idx, options, _, self) {
     return self.renderToken(tokens, idx, options)
   }
 
@@ -44,7 +44,7 @@ md.renderer.rules.html_inline = md.renderer.rules.html_block
 
 const defaultRender =
   md.renderer.rules.link_open ||
-  function (tokens, idx, options, env, self) {
+  function (tokens, idx, options, _, self) {
     return self.renderToken(tokens, idx, options)
   }
 
@@ -102,7 +102,6 @@ const scrollResultToBottom = () => {
   nextTick(() => {
     resultRef.value?.scrollTo({
       top: resultRef.value?.scrollHeight,
-      behavior: 'smooth',
     })
   })
 }
@@ -335,13 +334,15 @@ onActivated(() => {
       >
         <img :src="logo" alt="logo" class="h-10 w-10" />
         <div
-          class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-black"
+          class="prose dark:prose-invert max-w-none rounded-lg bg-[#FFFFFF] px-4 py-2 dark:bg-[#2C2C2C]"
           v-html="result.content"
         ></div>
       </div>
     </div>
 
-    <div class="flex flex-col gap-2 bg-white p-4 dark:bg-black">
+    <div
+      class="flex flex-col gap-2 border-t border-[#DADADA] bg-[#F3F3F3] p-4 dark:border-[#292929] dark:bg-[#111111]"
+    >
       <textarea
         ref="textareaRef"
         class="h-full w-full resize-none rounded outline-none"

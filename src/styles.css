@@ -57,15 +57,10 @@ html.dark {
   }
 }
 
-html .shiki,
-html .shiki span {
-  background-color: #ecf0f1 !important;
-}
-
 html.dark .shiki,
 html.dark .shiki span {
   color: var(--shiki-dark) !important;
-  background-color: #121212 !important;
+  background-color: var(--shiki-dark-bg) !important;
   /* 可选，用于定义字体样式 */
   font-style: var(--shiki-dark-font-style) !important;
   font-weight: var(--shiki-dark-font-weight) !important;
