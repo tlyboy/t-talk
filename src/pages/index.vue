@@ -322,10 +322,7 @@ onActivated(() => {
 
 <template>
   <div class="flex h-full flex-col justify-between">
-    <div
-      ref="resultRef"
-      class="flex flex-1 flex-col gap-2 overflow-y-auto bg-[#F3F3F3] p-4 dark:bg-[#111111]"
-    >
+    <div ref="resultRef" class="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
       <div
         class="flex gap-2"
         v-for="(result, index) in results"
@@ -344,29 +341,32 @@ onActivated(() => {
     </div>
 
     <div
-      class="flex flex-col gap-2 border-t border-[#DADADA] bg-[#F3F3F3] p-4 dark:border-[#292929] dark:bg-[#111111]"
+      class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
     >
+      <div class="flex gap-4 text-xl">
+        <button
+          class="i-carbon-magic-wand icon-btn"
+          :disabled="!text"
+          @click="handlePolish"
+          title="AI 润色"
+        ></button>
+        <button
+          class="i-carbon-chat-bot icon-btn"
+          :disabled="!text"
+          @click="handleAi"
+          title="AI 回复"
+        ></button>
+      </div>
+
       <textarea
         ref="textareaRef"
         class="h-full w-full resize-none rounded outline-none"
         v-model="text"
-        :rows="4"
+        :rows="3"
         @keydown.enter="handleEnter"
       />
 
       <div class="flex justify-end">
-        <el-button type="success" :disabled="!text" @click="handlePolish">
-          <template #icon>
-            <div class="i-carbon-edit"></div>
-          </template>
-          AI 润色
-        </el-button>
-        <el-button :disabled="!text" @click="handleAi">
-          <template #icon>
-            <div class="i-carbon-chat-bot"></div>
-          </template>
-          AI 回复
-        </el-button>
         <el-button type="primary" :disabled="!text" @click="handleSend">
           <template #icon>
             <div class="i-carbon-send"></div>

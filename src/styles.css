@@ -14,7 +14,12 @@ body,
   height: 100%;
 }
 
+html {
+  background: #f3f3f3;
+}
+
 html.dark {
+  background: #111111;
   color-scheme: dark;
 }
 
