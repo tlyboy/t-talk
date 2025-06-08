@@ -32,12 +32,6 @@ const onSubmit = async () => {
 
 const resetForm = () => {
   formRef.value?.resetFields()
-  form.url = ''
-  form.wsUrl = ''
-  form.aiModelUrl = ''
-  form.apiKey = ''
-  form.modelName = ''
-  settingsStore.settings = form
 }
 
 const logout = () => {
