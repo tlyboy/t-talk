@@ -70,6 +70,25 @@ onMounted(async () => {
   })
 
   useCopyCode()
+
+  resultRef.value?.scrollTo({
+    top: resultRef.value?.scrollHeight,
+    behavior: 'smooth',
+  })
+})
+
+onActivated(async () => {
+  results.value = messageStore.list.map((item) => {
+    return {
+      ...item,
+      content: md.render(item.content),
+    }
+  })
+
+  resultRef.value?.scrollTo({
+    top: resultRef.value?.scrollHeight,
+    behavior: 'smooth',
+  })
 })
 </script>
 

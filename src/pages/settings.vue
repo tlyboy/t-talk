@@ -3,6 +3,8 @@ const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 const router = useRouter()
 
+const messageStore = useMessageStore()
+
 const formRef = useTemplateRef('formRef')
 
 const form = reactive({
@@ -12,11 +14,9 @@ const form = reactive({
 const rules = {
   url: [{ required: true, message: '请输入API地址', trigger: 'blur' }],
   wsUrl: [{ required: true, message: '请输入WebSocket地址', trigger: 'blur' }],
-  aiModelUrl: [
-    { required: true, message: '请输入AI 模型地址', trigger: 'blur' },
-  ],
+  baseUrl: [{ required: true, message: '请输入模型地址', trigger: 'blur' }],
   apiKey: [{ required: true, message: '请输入API Key', trigger: 'blur' }],
-  modelName: [{ required: true, message: '请输入模型名称', trigger: 'blur' }],
+  model: [{ required: true, message: '请输入模型名称', trigger: 'blur' }],
 }
 
 const onSubmit = async () => {
@@ -41,6 +41,16 @@ const logout = () => {
   ElMessage.success('退出登录成功')
   router.push('/login')
 }
+
+const handleClear = async () => {
+  await ElMessageBox.confirm('确定清空聊天记录吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+
+  messageStore.list = []
+}
 </script>
 
 <template>
@@ -52,23 +62,27 @@ const logout = () => {
       <el-form-item label="WebSocket地址" prop="wsUrl">
         <el-input v-model="form.wsUrl" placeholder="请输入WebSocket地址" />
       </el-form-item>
-      <el-form-item label="AI 模型地址" prop="aiModelUrl">
-        <el-input v-model="form.aiModelUrl" placeholder="请输入AI 模型地址" />
+      <el-form-item label="AI 模型地址" prop="baseUrl">
+        <el-input v-model="form.baseUrl" placeholder="请输入AI模型地址" />
       </el-form-item>
-      <el-form-item label="API Key" prop="apiKey">
+      <el-form-item label="AI API Key" prop="apiKey">
         <el-input
           type="password"
           v-model="form.apiKey"
-          placeholder="请输入API Key"
+          placeholder="请输入AI API Key"
+          show-password
         />
       </el-form-item>
-      <el-form-item label="模型名称" prop="modelName">
-        <el-input v-model="form.modelName" placeholder="请输入模型名称" />
+      <el-form-item label="AI 模型名称" prop="model">
+        <el-input v-model="form.model" placeholder="请输入AI模型名称" />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">保存</el-button>
         <el-button @click="resetForm">重置</el-button>
         <el-button type="danger" @click="logout">退出登录</el-button>
+        <el-button type="danger" plain @click="handleClear"
+          >清空聊天记录</el-button
+        >
       </el-form-item>
     </el-form>
   </div>
