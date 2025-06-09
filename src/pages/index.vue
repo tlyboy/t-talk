@@ -183,52 +183,91 @@ onActivated(() => {
 </script>
 
 <template>
-  <div class="flex h-full flex-col justify-between">
-    <div ref="resultRef" class="flex flex-1 flex-col gap-2 overflow-y-auto p-4">
+  <div class="flex h-full">
+    <div
+      class="flex w-52 flex-col border-r border-[#DADADA] bg-[#F7F7F7] dark:border-[#292929] dark:bg-[#191919]"
+    >
       <div
-        class="flex gap-2"
-        v-for="(result, index) in results"
-        :key="index"
-        :class="{
-          'flex-row-reverse': result.role === 'user',
-          'flex-row': result.role === 'assistant',
-        }"
+        class="flex gap-2 border-b border-[#DEDEDE] px-2 py-4 dark:border-[#303030]"
       >
-        <img :src="logo" alt="logo" class="h-10 w-10" />
+        <el-input placeholder="搜索">
+          <template #prefix>
+            <div class="i-carbon-search"></div>
+          </template>
+        </el-input>
+
+        <el-button>
+          <template #icon>
+            <div class="i-carbon-add"></div>
+          </template>
+        </el-button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
         <div
-          class="prose dark:prose-invert max-w-none rounded-lg bg-[#FFFFFF] px-4 py-2 dark:bg-[#2C2C2C]"
-          v-html="result.content"
-        ></div>
+          v-for="item in 10"
+          :key="item"
+          class="flex items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
+        >
+          <img src="@/assets/images/logo.png" alt="logo" class="h-10 w-10" />
+          <div class="flex flex-col">
+            <span>User {{ item }}</span>
+            <span>[动画表情]</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div
-      class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
-    >
-      <div class="flex gap-4 text-xl">
-        <button
-          class="i-carbon-magic-wand icon-btn"
-          :disabled="!text"
-          @click="handlePolish"
-          title="AI 润色"
-        ></button>
+    <div class="flex h-full flex-1 flex-col justify-between">
+      <div
+        ref="resultRef"
+        class="flex flex-1 flex-col gap-2 overflow-y-auto p-4"
+      >
+        <div
+          class="flex gap-2"
+          v-for="(result, index) in results"
+          :key="index"
+          :class="{
+            'flex-row-reverse': result.role === 'user',
+            'flex-row': result.role === 'assistant',
+          }"
+        >
+          <img :src="logo" alt="logo" class="h-10 w-10" />
+          <div
+            class="prose dark:prose-invert max-w-none rounded-lg bg-[#FFFFFF] px-4 py-2 dark:bg-[#2C2C2C]"
+            v-html="result.content"
+          ></div>
+        </div>
       </div>
 
-      <textarea
-        ref="textareaRef"
-        class="h-full w-full resize-none rounded outline-none"
-        v-model="text"
-        :rows="3"
-        @keydown.enter="handleEnter"
-      />
+      <div
+        class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
+      >
+        <div class="flex gap-4 text-xl">
+          <button
+            class="i-carbon-magic-wand icon-btn"
+            :disabled="!text"
+            @click="handlePolish"
+            title="AI 润色"
+          ></button>
+        </div>
 
-      <div class="flex justify-end">
-        <el-button type="primary" :disabled="!text" @click="handleSend">
-          <template #icon>
-            <div class="i-carbon-send"></div>
-          </template>
-          发送
-        </el-button>
+        <textarea
+          ref="textareaRef"
+          class="h-full w-full resize-none rounded outline-none"
+          v-model="text"
+          :rows="3"
+          @keydown.enter="handleEnter"
+        />
+
+        <div class="flex justify-end">
+          <el-button type="primary" :disabled="!text" @click="handleSend">
+            <template #icon>
+              <div class="i-carbon-send"></div>
+            </template>
+            发送
+          </el-button>
+        </div>
       </div>
     </div>
   </div>
