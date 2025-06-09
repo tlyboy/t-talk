@@ -7,8 +7,7 @@ import MarkdownItCopyCode, { useCopyCode } from 'markdown-it-copy-code'
 import 'markdown-it-copy-code/styles/base.css'
 import 'markdown-it-copy-code/styles/medium.css'
 
-import logo from '@/assets/images/logo.png'
-
+const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
 const results = ref<any[]>([])
@@ -73,6 +72,7 @@ const handleSend = async () => {
   messageStore.currentMessage.messages.push({
     role: 'user',
     content: text.value,
+    username: userStore.username,
   })
   results.value = messageStore.currentMessage.messages.map((item: any) => ({
     ...item,
@@ -194,7 +194,7 @@ onActivated(() => {
       <div
         class="flex gap-2 border-b border-[#DEDEDE] px-2 py-4 dark:border-[#303030]"
       >
-        <el-input placeholder="搜索">
+        <el-input v-model="messageStore.search" placeholder="搜索">
           <template #prefix>
             <div class="i-carbon-search"></div>
           </template>
@@ -209,7 +209,7 @@ onActivated(() => {
 
       <div class="flex-1 overflow-y-auto">
         <div
-          v-for="(item, index) in messageStore.list"
+          v-for="(item, index) in messageStore.filteredList"
           :key="index"
           class="flex items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
           :class="{
@@ -217,7 +217,11 @@ onActivated(() => {
           }"
           @click="handleSelectMessage(index)"
         >
-          <img :src="logo" alt="logo" class="h-10 w-10" />
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFFFFF] dark:bg-[#2C2C2C]"
+          >
+            <span>{{ item.username[0].toUpperCase() }}</span>
+          </div>
           <div class="flex-1 overflow-hidden">
             <div class="truncate">{{ item.username }}</div>
             <div class="truncate">
@@ -238,13 +242,22 @@ onActivated(() => {
           v-for="(result, index) in results"
           :key="index"
           :class="{
-            'flex-row-reverse': result.role === 'user',
-            'flex-row': result.role === 'assistant',
+            'flex-row-reverse': result.username === userStore.username,
+            'flex-row': result.username !== userStore.username,
           }"
         >
-          <img :src="logo" alt="logo" class="h-10 w-10" />
           <div
-            class="prose dark:prose-invert max-w-none rounded-lg bg-[#FFFFFF] px-4 py-2 dark:bg-[#2C2C2C]"
+            class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
+            :class="{
+              'bg-[#3498db] text-white': result.username === userStore.username,
+              'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
+                result.username !== userStore.username,
+            }"
+          >
+            <span>{{ result.username[0].toUpperCase() }}</span>
+          </div>
+          <div
+            class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
             v-html="result.content"
           ></div>
         </div>

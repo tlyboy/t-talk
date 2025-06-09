@@ -3,22 +3,26 @@ export const useMessageStore = defineStore(
   () => {
     const current = ref(0)
 
+    const search = ref('')
+
     const list = ref<any[]>([
       {
-        username: 'User1',
+        username: 'User 1',
         messages: [
           {
             role: 'user',
             content: 'Hello, how are you?',
+            username: 'User 1',
           },
         ],
       },
       {
-        username: 'User2',
+        username: 'User 2',
         messages: [
           {
             role: 'user',
-            content: 'Hello, how are you?',
+            content: 'What is the capital of France?',
+            username: 'User 2',
           },
         ],
       },
@@ -28,10 +32,23 @@ export const useMessageStore = defineStore(
       return list.value[current.value]
     })
 
+    const filteredList = computed(() => {
+      return list.value.filter((item) => {
+        return (
+          item.username.toLowerCase().includes(search.value.toLowerCase()) ||
+          item.messages[item.messages.length - 1].content
+            .toLowerCase()
+            .includes(search.value.toLowerCase())
+        )
+      })
+    })
+
     return {
       list,
       current,
       currentMessage,
+      search,
+      filteredList,
     }
   },
   {

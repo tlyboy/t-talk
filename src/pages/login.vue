@@ -26,14 +26,10 @@ const onSubmit = async () => {
   try {
     await formRef.value?.validate()
 
-    if (form.username === 'admin' && form.password === '123456') {
-      userStore.id = '1'
-      userStore.username = form.username
-      userStore.password = form.password
-      router.push('/')
-    } else {
-      ElMessage.error('用户名或密码错误')
-    }
+    userStore.id = '1'
+    userStore.username = form.username
+    userStore.password = form.password
+    router.push('/')
   } catch (error) {
     console.log(error)
   }
