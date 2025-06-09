@@ -1,9 +1,12 @@
 <script setup lang="ts">
-import Shiki from '@shikijs/markdown-it'
 import MarkdownIt from 'markdown-it'
+import Shiki from '@shikijs/markdown-it'
+import { transformerColorizedBrackets } from '@shikijs/colorized-brackets'
+import LinkAttributes from 'markdown-it-link-attributes'
 import MarkdownItCopyCode, { useCopyCode } from 'markdown-it-copy-code'
 import 'markdown-it-copy-code/styles/base.css'
 import 'markdown-it-copy-code/styles/medium.css'
+
 import logo from '@/assets/images/logo.png'
 
 interface Message {
@@ -19,75 +22,28 @@ const text = ref('')
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
 
-const md = MarkdownIt({
-  html: true,
-  linkify: true,
-})
-
-const originalRender =
-  md.renderer.rules.html_block ||
-  function (tokens, idx, options, _, self) {
-    return self.renderToken(tokens, idx, options)
-  }
-
-md.renderer.rules.html_block = function (tokens, idx, options, env, self) {
-  const content = tokens[idx].content
-
-  if (content.match(/^<\/?(?:details|summary)[\s>]/)) {
-    return originalRender(tokens, idx, options, env, self)
-  }
-
-  return content.replace(/</g, '&lt;').replace(/>/g, '&gt;')
-}
-
-md.renderer.rules.html_inline = md.renderer.rules.html_block
-
-const defaultRender =
-  md.renderer.rules.link_open ||
-  function (tokens, idx, options, _, self) {
-    return self.renderToken(tokens, idx, options)
-  }
-
-md.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-  const token = tokens[idx]
-
-  if (!token.attrs) {
-    token.attrs = []
-  }
-
-  const aIndex = token.attrIndex('target')
-  if (aIndex < 0) {
-    token.attrPush(['target', '_blank'])
-  } else {
-    token.attrs[aIndex][1] = '_blank'
-  }
-
-  const relIndex = token.attrIndex('rel')
-  if (relIndex < 0) {
-    token.attrPush(['rel', 'noopener noreferrer'])
-  } else {
-    token.attrs[relIndex][1] = 'noopener noreferrer'
-  }
-
-  return defaultRender(tokens, idx, options, env, self)
-}
+const md = MarkdownIt()
 
 const initMd = async () => {
+  md.use(LinkAttributes, {
+    matcher: (link: string) => /^https?:\/\//.test(link),
+    attrs: {
+      target: '_blank',
+      rel: 'noopener',
+    },
+  })
+
   md.use(
     await Shiki({
       themes: {
         light: 'vitesse-light',
         dark: 'vitesse-dark',
       },
+      transformers: [transformerColorizedBrackets()],
     }),
   )
-  md.use(MarkdownItCopyCode, {})
-}
 
-const parseThinkContent = (content: string) => {
-  return content
-    .replace(/<think>/g, '\n\n<details open>\n<summary>思考过程</summary>\n\n')
-    .replace(/<\/think>/g, '\n\n</details>\n\n')
+  md.use(MarkdownItCopyCode, {})
 }
 
 const scrollTextareaToBottom = () => {
@@ -129,96 +85,6 @@ const handleSend = async () => {
   }))
   text.value = ''
   scrollResultToBottom()
-}
-
-const handleAi = async () => {
-  try {
-    messageStore.list.push({
-      role: 'user',
-      content: text.value,
-    })
-
-    const userMessage = text.value
-    text.value = ''
-
-    messageStore.list.push({
-      role: 'assistant',
-      content: '',
-    })
-
-    let currentMessage = ''
-    const updateResults = () => {
-      const parsedContent = parseThinkContent(currentMessage)
-      messageStore.list[messageStore.list.length - 1].content = parsedContent
-      results.value = messageStore.list.map((item) => ({
-        ...item,
-        content: md.render(item.content),
-      }))
-    }
-
-    updateResults()
-    scrollResultToBottom()
-
-    const res = await fetch(
-      `${settingsStore.settings.baseUrl}/chat/completions`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${settingsStore.settings.apiKey}`,
-        },
-        body: JSON.stringify({
-          model: settingsStore.settings.model,
-          messages: [
-            {
-              role: 'user',
-              content: userMessage,
-            },
-          ],
-          stream: true,
-        }),
-      },
-    )
-
-    if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`)
-    }
-
-    const reader = res.body?.getReader()
-    if (!reader) {
-      throw new Error('No reader available')
-    }
-
-    const decoder = new TextDecoder()
-
-    while (true) {
-      const { done, value } = await reader.read()
-      if (done) break
-
-      const chunk = decoder.decode(value)
-      const lines = chunk.split('\n')
-
-      for (const line of lines) {
-        if (line.startsWith('data: ')) {
-          const data = line.slice(6)
-          if (data === '[DONE]') continue
-
-          try {
-            const json = JSON.parse(data)
-            const content = json.choices[0]?.delta?.content || ''
-            currentMessage += content
-            updateResults()
-            scrollResultToBottom()
-          } catch (e) {
-            console.error('Error parsing JSON:', e)
-          }
-        }
-      }
-    }
-  } catch (error) {
-    console.error('Error:', error)
-    ElMessage.error('AI 回复失败，请重试')
-  }
 }
 
 const handlePolish = async () => {
@@ -288,11 +154,7 @@ const handlePolish = async () => {
       }
     }
 
-    const cleanContent = fullContent
-      .replace(/<think>[\s\S]*?<\/think>/g, '')
-      .replace(/^\s+|\s+$/g, '')
-
-    text.value = cleanContent
+    text.value = fullContent
     scrollTextareaToBottom()
     ElMessage.success('润色完成')
   } catch (error) {
@@ -349,12 +211,6 @@ onActivated(() => {
           :disabled="!text"
           @click="handlePolish"
           title="AI 润色"
-        ></button>
-        <button
-          class="i-carbon-chat-bot icon-btn"
-          :disabled="!text"
-          @click="handleAi"
-          title="AI 回复"
         ></button>
       </div>
 
