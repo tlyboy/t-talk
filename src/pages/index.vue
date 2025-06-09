@@ -9,14 +9,9 @@ import 'markdown-it-copy-code/styles/medium.css'
 
 import logo from '@/assets/images/logo.png'
 
-interface Message {
-  role: 'user' | 'assistant'
-  content: string
-}
-
 const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
-const results = ref<Message[]>([])
+const results = ref<any[]>([])
 const text = ref('')
 
 const resultRef = useTemplateRef('resultRef')
@@ -75,11 +70,11 @@ const handleEnter = (event: KeyboardEvent) => {
 }
 
 const handleSend = async () => {
-  messageStore.list.push({
+  messageStore.currentMessage.messages.push({
     role: 'user',
     content: text.value,
   })
-  results.value = messageStore.list.map((item) => ({
+  results.value = messageStore.currentMessage.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -163,9 +158,18 @@ const handlePolish = async () => {
   }
 }
 
+const handleSelectMessage = (index: number) => {
+  messageStore.current = index
+  results.value = messageStore.currentMessage.messages.map((item: any) => ({
+    ...item,
+    content: md.render(item.content),
+  }))
+  scrollResultToBottom()
+}
+
 onMounted(async () => {
   await initMd()
-  results.value = messageStore.list.map((item) => ({
+  results.value = messageStore.currentMessage.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -174,7 +178,7 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  results.value = messageStore.list.map((item) => ({
+  results.value = messageStore.currentMessage.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -205,14 +209,20 @@ onActivated(() => {
 
       <div class="flex-1 overflow-y-auto">
         <div
-          v-for="item in 10"
-          :key="item"
+          v-for="(item, index) in messageStore.list"
+          :key="index"
           class="flex items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
+          :class="{
+            'bg-[#DEDEDE] dark:bg-[#303030]': messageStore.current === index,
+          }"
+          @click="handleSelectMessage(index)"
         >
-          <img src="@/assets/images/logo.png" alt="logo" class="h-10 w-10" />
-          <div class="flex flex-col">
-            <span>User {{ item }}</span>
-            <span>[动画表情]</span>
+          <img :src="logo" alt="logo" class="h-10 w-10" />
+          <div class="flex-1 overflow-hidden">
+            <div class="truncate">{{ item.username }}</div>
+            <div class="truncate">
+              {{ item.messages[item.messages.length - 1].content }}
+            </div>
           </div>
         </div>
       </div>
@@ -221,10 +231,10 @@ onActivated(() => {
     <div class="flex h-full flex-1 flex-col justify-between">
       <div
         ref="resultRef"
-        class="flex flex-1 flex-col gap-2 overflow-y-auto p-4"
+        class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
       >
         <div
-          class="flex gap-2"
+          class="flex gap-4"
           v-for="(result, index) in results"
           :key="index"
           :class="{
