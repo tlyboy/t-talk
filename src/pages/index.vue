@@ -246,15 +246,18 @@ onActivated(() => {
             'flex-row': result.username !== userStore.username,
           }"
         >
-          <div
-            class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full"
-            :class="{
-              'bg-[#3498db] text-white': result.username === userStore.username,
-              'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
-                result.username !== userStore.username,
-            }"
-          >
-            <span>{{ result.username[0].toUpperCase() }}</span>
+          <div>
+            <div
+              class="flex h-10 w-10 items-center justify-center rounded-full"
+              :class="{
+                'bg-[#3498db] text-white':
+                  result.username === userStore.username,
+                'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
+                  result.username !== userStore.username,
+              }"
+            >
+              <span>{{ result.username[0].toUpperCase() }}</span>
+            </div>
           </div>
           <div
             class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
