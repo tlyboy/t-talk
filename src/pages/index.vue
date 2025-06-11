@@ -187,31 +187,44 @@ onActivated(() => {
 </script>
 
 <template>
-  <div class="flex h-full">
-    <div
-      class="flex w-52 flex-col border-r border-[#DADADA] bg-[#F7F7F7] dark:border-[#292929] dark:bg-[#191919]"
-    >
+  <div class="flex h-full flex-col">
+    <div class="flex items-center">
       <div
-        class="flex gap-2 border-b border-[#DEDEDE] px-2 py-4 dark:border-[#303030]"
+        class="flex w-52 items-center gap-2 border-r border-b border-[#DADADA] bg-[#F7F7F7] px-2 py-4 dark:border-[#292929] dark:bg-[#191919]"
       >
-        <el-input v-model="messageStore.search" placeholder="搜索">
+        <el-input
+          size="small"
+          v-model="messageStore.search"
+          placeholder="搜索"
+          clearable
+        >
           <template #prefix>
             <div class="i-carbon-search"></div>
           </template>
         </el-input>
 
-        <el-button>
+        <el-button size="small">
           <template #icon>
             <div class="i-carbon-add"></div>
           </template>
         </el-button>
       </div>
 
-      <div class="flex-1 overflow-y-auto">
+      <div
+        class="flex h-full flex-1 items-center border-b border-[#DADADA] px-4 dark:border-[#292929] dark:bg-[#111111]"
+      >
+        <div>{{ messageStore.currentMessage.username }}</div>
+      </div>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden">
+      <div
+        class="w-52 overflow-y-auto border-r border-[#DADADA] dark:border-[#292929]"
+      >
         <div
           v-for="(item, index) in messageStore.filteredList"
           :key="index"
-          class="flex items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
+          class="flex cursor-default items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
           :class="{
             'bg-[#DEDEDE] dark:bg-[#303030]': messageStore.current === index,
           }"
@@ -230,69 +243,69 @@ onActivated(() => {
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="flex h-full flex-1 flex-col justify-between">
-      <div
-        ref="resultRef"
-        class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
-      >
+      <div class="flex flex-1 flex-col overflow-hidden">
         <div
-          class="flex gap-4"
-          v-for="(result, index) in results"
-          :key="index"
-          :class="{
-            'flex-row-reverse': result.username === userStore.username,
-            'flex-row': result.username !== userStore.username,
-          }"
+          ref="resultRef"
+          class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
         >
-          <div>
-            <div
-              class="flex h-10 w-10 items-center justify-center rounded-full"
-              :class="{
-                'bg-[#3498db] text-white':
-                  result.username === userStore.username,
-                'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
-                  result.username !== userStore.username,
-              }"
-            >
-              <span>{{ result.username[0].toUpperCase() }}</span>
-            </div>
-          </div>
           <div
-            class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
-            v-html="result.content"
-          ></div>
+            class="flex gap-4"
+            v-for="(result, index) in results"
+            :key="index"
+            :class="{
+              'flex-row-reverse': result.username === userStore.username,
+              'flex-row': result.username !== userStore.username,
+            }"
+          >
+            <div>
+              <div
+                class="flex h-10 w-10 items-center justify-center rounded-full"
+                :class="{
+                  'bg-[#3498db] text-white':
+                    result.username === userStore.username,
+                  'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
+                    result.username !== userStore.username,
+                }"
+              >
+                <span>{{ result.username[0].toUpperCase() }}</span>
+              </div>
+            </div>
+            <div
+              class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
+              v-html="result.content"
+            ></div>
+          </div>
         </div>
-      </div>
 
-      <div
-        class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
-      >
-        <div class="flex gap-4 text-xl">
-          <button
-            class="i-carbon-magic-wand icon-btn"
-            :disabled="!text"
-            @click="handlePolish"
-            title="AI 润色"
-          ></button>
-        </div>
+        <div
+          class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
+        >
+          <div class="flex gap-4 text-xl">
+            <button
+              class="i-carbon-magic-wand icon-btn"
+              :disabled="!text"
+              @click="handlePolish"
+              title="AI 润色"
+            ></button>
+          </div>
 
-        <textarea
-          ref="textareaRef"
-          class="h-full w-full resize-none rounded outline-none"
-          v-model="text"
-          :rows="3"
-          @keydown.enter="handleEnter"
-        />
+          <textarea
+            ref="textareaRef"
+            class="h-full w-full resize-none rounded outline-none"
+            v-model="text"
+            :rows="3"
+            @keydown.enter="handleEnter"
+          />
 
-        <div class="flex justify-end">
-          <el-button type="primary" :disabled="!text" @click="handleSend">
-            <template #icon>
-              <div class="i-carbon-send"></div>
-            </template>
-            发送
-          </el-button>
+          <div class="flex justify-end">
+            <el-button type="primary" :disabled="!text" @click="handleSend">
+              <template #icon>
+                <div class="i-carbon-send"></div>
+              </template>
+              发送
+            </el-button>
+          </div>
         </div>
       </div>
     </div>
