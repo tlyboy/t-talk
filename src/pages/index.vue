@@ -211,9 +211,10 @@ onActivated(() => {
       </div>
 
       <div
-        class="flex h-full flex-1 items-center border-b border-[#DADADA] px-4 dark:border-[#292929] dark:bg-[#111111]"
+        class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929] dark:bg-[#111111]"
       >
         <div>{{ messageStore.currentMessage.username }}</div>
+        <div class="i-carbon-overflow-menu-horizontal icon-btn text-xl"></div>
       </div>
     </div>
 
@@ -231,7 +232,7 @@ onActivated(() => {
           @click="handleSelectMessage(index)"
         >
           <div
-            class="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFFFFF] dark:bg-[#2C2C2C]"
+            class="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#FFFFFF] dark:bg-[#2C2C2C]"
           >
             <span>{{ item.username[0].toUpperCase() }}</span>
           </div>
@@ -260,7 +261,7 @@ onActivated(() => {
           >
             <div>
               <div
-                class="flex h-10 w-10 items-center justify-center rounded-full"
+                class="flex h-[44px] w-[44px] items-center justify-center rounded-full"
                 :class="{
                   'bg-[#3498db] text-white':
                     result.username === userStore.username,
