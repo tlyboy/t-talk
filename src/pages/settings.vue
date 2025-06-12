@@ -17,6 +17,9 @@ const rules = {
   baseUrl: [{ required: true, message: '请输入模型地址', trigger: 'blur' }],
   apiKey: [{ required: true, message: '请输入API Key', trigger: 'blur' }],
   model: [{ required: true, message: '请输入模型名称', trigger: 'blur' }],
+  polishPrompt: [
+    { required: true, message: '请输入润色提示词', trigger: 'blur' },
+  ],
 }
 
 const onSubmit = async () => {
@@ -75,6 +78,14 @@ const handleClear = async () => {
       </el-form-item>
       <el-form-item label="AI 模型名称" prop="model">
         <el-input v-model="form.model" placeholder="请输入AI模型名称" />
+      </el-form-item>
+      <el-form-item label="润色提示词" prop="polishPrompt">
+        <el-input
+          v-model="form.polishPrompt"
+          placeholder="请输入润色提示词"
+          type="textarea"
+          :rows="4"
+        />
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="onSubmit">保存</el-button>
