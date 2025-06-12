@@ -12,7 +12,7 @@ const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
 const results = ref<any[]>([])
 const text = ref('')
-
+const drawer = ref(false)
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
 
@@ -69,12 +69,12 @@ const handleEnter = (event: KeyboardEvent) => {
 }
 
 const handleSend = async () => {
-  messageStore.currentMessage.messages.push({
+  messageStore.currentMessage?.messages.push({
     role: 'user',
     content: text.value,
     username: userStore.username,
   })
-  results.value = messageStore.currentMessage.messages.map((item: any) => ({
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -159,16 +159,36 @@ const handlePolish = async () => {
 
 const handleSelectMessage = (index: number) => {
   messageStore.current = index
-  results.value = messageStore.currentMessage.messages.map((item: any) => ({
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
   scrollResultToBottom()
 }
 
+const handleClear = async () => {
+  await ElMessageBox.confirm('确定清空聊天记录吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+
+  messageStore.currentMessage.messages = []
+  results.value = []
+  text.value = ''
+}
+
+const handleExit = () => {
+  drawer.value = false
+  messageStore.list.splice(messageStore.current, 1)
+  messageStore.current = 0
+  results.value = []
+  text.value = ''
+}
+
 onMounted(async () => {
   await initMd()
-  results.value = messageStore.currentMessage.messages.map((item: any) => ({
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -177,7 +197,7 @@ onMounted(async () => {
 })
 
 onActivated(() => {
-  results.value = messageStore.currentMessage.messages.map((item: any) => ({
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
     content: md.render(item.content),
   }))
@@ -212,8 +232,12 @@ onActivated(() => {
       <div
         class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
       >
-        <div>{{ messageStore.currentMessage.username }}</div>
-        <div class="i-carbon-overflow-menu-horizontal icon-btn text-xl"></div>
+        <div>{{ messageStore.currentMessage?.username }}</div>
+        <div
+          v-if="messageStore.currentMessage?.username"
+          class="i-carbon-overflow-menu-horizontal icon-btn text-xl"
+          @click="drawer = true"
+        ></div>
       </div>
     </div>
 
@@ -238,13 +262,20 @@ onActivated(() => {
           <div class="flex-1 overflow-hidden">
             <div class="truncate">{{ item.username }}</div>
             <div class="truncate">
-              {{ item.messages[item.messages.length - 1].content }}
+              {{
+                item.messages.length > 0
+                  ? item.messages[item.messages.length - 1].content
+                  : '暂无消息'
+              }}
             </div>
           </div>
         </div>
       </div>
 
-      <div class="flex flex-1 flex-col overflow-hidden">
+      <div
+        class="flex flex-1 flex-col overflow-hidden"
+        v-if="messageStore.currentMessage?.username"
+      >
         <div
           ref="resultRef"
           class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
@@ -309,5 +340,19 @@ onActivated(() => {
         </div>
       </div>
     </div>
+
+    <el-drawer v-model="drawer" direction="rtl" :with-header="false">
+      <div class="flex flex-col items-center gap-4 p-4">
+        <div>
+          <el-button type="warning" link @click="handleClear"
+            >清空聊天记录</el-button
+          >
+        </div>
+
+        <div>
+          <el-button type="danger" link @click="handleExit">退出会话</el-button>
+        </div>
+      </div>
+    </el-drawer>
   </div>
 </template>

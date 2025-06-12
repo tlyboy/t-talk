@@ -46,13 +46,24 @@ const logout = () => {
 }
 
 const handleClear = async () => {
-  await ElMessageBox.confirm('确定清空聊天记录吗？', '提示', {
+  await ElMessageBox.confirm('确定清空全部聊天记录吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning',
   })
 
   messageStore.list = []
+}
+
+const handleClearCache = async () => {
+  await ElMessageBox.confirm('确定清除缓存吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+
+  localStorage.clear()
+  ElMessage.success('清除缓存成功')
 }
 </script>
 
@@ -88,12 +99,38 @@ const handleClear = async () => {
         />
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">保存</el-button>
-        <el-button @click="resetForm">重置</el-button>
-        <el-button type="danger" @click="logout">退出登录</el-button>
-        <el-button type="danger" plain @click="handleClear"
-          >清空聊天记录</el-button
-        >
+        <el-button type="primary" @click="onSubmit">
+          <template #icon>
+            <div class="i-carbon-save"></div>
+          </template>
+          保存
+        </el-button>
+        <el-button @click="resetForm">
+          <template #icon>
+            <div class="i-carbon-reset"></div>
+          </template>
+          重置
+        </el-button>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="danger" @click="logout">
+          <template #icon>
+            <div class="i-carbon-logout"></div>
+          </template>
+          退出登录
+        </el-button>
+        <el-button type="warning" plain @click="handleClear">
+          <template #icon>
+            <div class="i-carbon-delete"></div>
+          </template>
+          清空全部聊天记录
+        </el-button>
+        <el-button type="danger" plain @click="handleClearCache">
+          <template #icon>
+            <div class="i-carbon-trash-can"></div>
+          </template>
+          清除缓存
+        </el-button>
       </el-form-item>
     </el-form>
   </div>
