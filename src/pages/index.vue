@@ -15,6 +15,12 @@ const text = ref('')
 const drawer = ref(false)
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
+const dialogVisible = ref(false)
+const formRef = useTemplateRef('formRef')
+const usernameRef = useTemplateRef('usernameRef')
+const form = ref({
+  username: '',
+})
 
 const md = MarkdownIt()
 
@@ -178,12 +184,50 @@ const handleClear = async () => {
   text.value = ''
 }
 
-const handleExit = () => {
+const handleExit = async () => {
+  await ElMessageBox.confirm('确定退出会话吗？', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning',
+  })
+
   drawer.value = false
   messageStore.list.splice(messageStore.current, 1)
-  messageStore.current = 0
-  results.value = []
+  messageStore.current =
+    messageStore.current > messageStore.list.length - 1
+      ? messageStore.list.length - 1
+      : messageStore.current
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
+    ...item,
+    content: md.render(item.content),
+  }))
   text.value = ''
+}
+
+const handleSubmit = () => {
+  messageStore.list.push({
+    username: form.value.username,
+    messages: [],
+  })
+  messageStore.current = messageStore.list.length - 1
+  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
+    ...item,
+    content: md.render(item.content),
+  }))
+  dialogVisible.value = false
+}
+
+const resetForm = () => {
+  formRef.value?.resetFields()
+}
+
+const handleAdd = async () => {
+  resetForm()
+  dialogVisible.value = true
+}
+
+const opened = async () => {
+  usernameRef.value?.focus()
 }
 
 onMounted(async () => {
@@ -222,7 +266,7 @@ onActivated(() => {
           </template>
         </el-input>
 
-        <el-button size="small">
+        <el-button size="small" @click="handleAdd">
           <template #icon>
             <div class="i-carbon-add"></div>
           </template>
@@ -234,7 +278,6 @@ onActivated(() => {
       >
         <div>{{ messageStore.currentMessage?.username }}</div>
         <div
-          v-if="messageStore.currentMessage?.username"
           class="i-carbon-overflow-menu-horizontal icon-btn text-xl"
           @click="drawer = true"
         ></div>
@@ -248,16 +291,17 @@ onActivated(() => {
         <div
           v-for="(item, index) in messageStore.filteredList"
           :key="index"
-          class="flex cursor-default items-center gap-2 bg-[#F7F7F7] px-2 py-4 hover:bg-[#EAEAEA] dark:bg-[#191919] hover:dark:bg-[#252525]"
+          class="flex cursor-default items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
           :class="{
             'bg-[#DEDEDE] dark:bg-[#303030]': messageStore.current === index,
+            'bg-[#F7F7F7] dark:bg-[#191919]': messageStore.current !== index,
           }"
           @click="handleSelectMessage(index)"
         >
           <div
             class="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#FFFFFF] dark:bg-[#2C2C2C]"
           >
-            <span>{{ item.username[0].toUpperCase() }}</span>
+            <span>{{ item.username?.[0]?.toUpperCase() }}</span>
           </div>
           <div class="flex-1 overflow-hidden">
             <div class="truncate">{{ item.username }}</div>
@@ -272,10 +316,7 @@ onActivated(() => {
         </div>
       </div>
 
-      <div
-        class="flex flex-1 flex-col overflow-hidden"
-        v-if="messageStore.currentMessage?.username"
-      >
+      <div class="flex flex-1 flex-col overflow-hidden">
         <div
           ref="resultRef"
           class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
@@ -299,11 +340,11 @@ onActivated(() => {
                     result.username !== userStore.username,
                 }"
               >
-                <span>{{ result.username[0].toUpperCase() }}</span>
+                <span>{{ result.username?.[0]?.toUpperCase() }}</span>
               </div>
             </div>
             <div
-              class="prose dark:prose-invert max-w-none rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
+              class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
               v-html="result.content"
             ></div>
           </div>
@@ -341,8 +382,28 @@ onActivated(() => {
       </div>
     </div>
 
+    <el-dialog v-model="dialogVisible" @opened="opened">
+      <el-form
+        ref="formRef"
+        label-width="auto"
+        label-position="top"
+        :model="form"
+        @submit.prevent="handleSubmit"
+      >
+        <el-form-item label="用户名" prop="username">
+          <el-input ref="usernameRef" v-model="form.username" autofocus />
+        </el-form-item>
+      </el-form>
+    </el-dialog>
+
     <el-drawer v-model="drawer" direction="rtl" :with-header="false">
-      <div class="flex flex-col items-center gap-4 p-4">
+      <div class="flex flex-col items-center gap-4">
+        <el-form label-width="auto" label-position="top" @submit.prevent>
+          <el-form-item label="会话名称">
+            <el-input v-model="messageStore.currentMessage.username" />
+          </el-form-item>
+        </el-form>
+
         <div>
           <el-button type="warning" link @click="handleClear"
             >清空聊天记录</el-button
