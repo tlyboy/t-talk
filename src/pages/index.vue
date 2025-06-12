@@ -211,7 +211,7 @@ onActivated(() => {
       </div>
 
       <div
-        class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929] dark:bg-[#111111]"
+        class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
       >
         <div>{{ messageStore.currentMessage.username }}</div>
         <div class="i-carbon-overflow-menu-horizontal icon-btn text-xl"></div>
@@ -225,7 +225,7 @@ onActivated(() => {
         <div
           v-for="(item, index) in messageStore.filteredList"
           :key="index"
-          class="flex cursor-default items-center gap-2 px-2 py-4 hover:bg-[#EAEAEA] hover:dark:bg-[#252525]"
+          class="flex cursor-default items-center gap-2 bg-[#F7F7F7] px-2 py-4 hover:bg-[#EAEAEA] dark:bg-[#191919] hover:dark:bg-[#252525]"
           :class="{
             'bg-[#DEDEDE] dark:bg-[#303030]': messageStore.current === index,
           }"
