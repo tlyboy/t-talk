@@ -38,9 +38,7 @@ const resetForm = () => {
 }
 
 const logout = () => {
-  userStore.id = ''
-  userStore.username = ''
-  userStore.password = ''
+  userStore.user = {}
   ElMessage.success('退出登录成功')
   router.push('/login')
 }

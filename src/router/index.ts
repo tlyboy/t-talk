@@ -7,12 +7,12 @@ const router = createRouter({
   routes: setupLayouts(routes),
 })
 
-const whiteList = ['/login', '/settings']
+const whiteList = ['/login', '/register', '/settings']
 
 router.beforeEach((to, _, next) => {
   const userStore = useUserStore()
 
-  if (!whiteList.includes(to.path) && !userStore.id) {
+  if (!whiteList.includes(to.path) && !userStore.user.id) {
     next('/login')
   } else {
     next()

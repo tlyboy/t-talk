@@ -78,7 +78,8 @@ const handleSend = async () => {
   messageStore.currentMessage?.messages.push({
     role: 'user',
     content: text.value,
-    username: userStore.username,
+    username: userStore.user.username,
+    fullName: userStore.user.fullName,
   })
   results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
@@ -206,7 +207,7 @@ const handleExit = async () => {
 
 const handleSubmit = () => {
   messageStore.list.push({
-    username: form.value.username,
+    title: form.value.username,
     messages: [],
   })
   messageStore.current = messageStore.list.length - 1
@@ -276,7 +277,7 @@ onActivated(() => {
       <div
         class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
       >
-        <div>{{ messageStore.currentMessage?.username }}</div>
+        <div>{{ messageStore.currentMessage?.title }}</div>
         <div
           class="i-carbon-overflow-menu-horizontal icon-btn text-xl"
           @click="drawer = true"
@@ -301,10 +302,10 @@ onActivated(() => {
           <div
             class="flex h-[44px] w-[44px] items-center justify-center rounded-full bg-[#FFFFFF] dark:bg-[#2C2C2C]"
           >
-            <span>{{ item.username?.[0]?.toUpperCase() }}</span>
+            <span>{{ item.title?.[0]?.toUpperCase() }}</span>
           </div>
           <div class="flex-1 overflow-hidden">
-            <div class="truncate">{{ item.username }}</div>
+            <div class="truncate">{{ item.title }}</div>
             <div class="truncate">
               {{
                 item.messages.length > 0
@@ -326,8 +327,8 @@ onActivated(() => {
             v-for="(result, index) in results"
             :key="index"
             :class="{
-              'flex-row-reverse': result.username === userStore.username,
-              'flex-row': result.username !== userStore.username,
+              'flex-row-reverse': result.username === userStore.user.username,
+              'flex-row': result.username !== userStore.user.username,
             }"
           >
             <div>
@@ -335,9 +336,9 @@ onActivated(() => {
                 class="flex h-[44px] w-[44px] items-center justify-center rounded-full"
                 :class="{
                   'bg-[#3498db] text-white':
-                    result.username === userStore.username,
+                    result.username === userStore.user.username,
                   'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
-                    result.username !== userStore.username,
+                    result.username !== userStore.user.username,
                 }"
               >
                 <span>{{ result.username?.[0]?.toUpperCase() }}</span>
@@ -400,7 +401,7 @@ onActivated(() => {
       <div class="flex flex-col items-center gap-4">
         <el-form label-width="auto" label-position="top" @submit.prevent>
           <el-form-item label="会话名称">
-            <el-input v-model="messageStore.currentMessage.username" />
+            <el-input v-model="messageStore.currentMessage.title" />
           </el-form-item>
         </el-form>
 

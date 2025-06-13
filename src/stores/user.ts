@@ -1,14 +1,24 @@
+import { login as loginApi, register as registerApi } from '@/api/user'
+
 export const useUserStore = defineStore(
   'user',
   () => {
-    const id = ref('')
-    const username = ref('')
-    const password = ref('')
+    const user = ref<any>({})
+
+    const register = async (data: any) => {
+      const res = await registerApi(data)
+      user.value = res
+    }
+
+    const login = async (data: any) => {
+      const res = await loginApi(data)
+      user.value = res
+    }
 
     return {
-      id,
-      username,
-      password,
+      user,
+      register,
+      login,
     }
   },
   {
