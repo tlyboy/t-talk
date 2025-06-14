@@ -12,8 +12,9 @@ export const useMessageStore = defineStore(
           {
             role: 'user',
             content: 'Hello, how are you?',
+            userId: 999,
             username: 'user1',
-            fullName: 'User 1',
+            nickname: 'User 1',
           },
         ],
       },
@@ -23,8 +24,9 @@ export const useMessageStore = defineStore(
           {
             role: 'user',
             content: 'What is the capital of France?',
+            userId: 888,
             username: 'user2',
-            fullName: 'User 2',
+            nickname: 'User 2',
           },
         ],
       },

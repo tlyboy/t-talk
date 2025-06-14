@@ -78,8 +78,9 @@ const handleSend = async () => {
   messageStore.currentMessage?.messages.push({
     role: 'user',
     content: text.value,
+    userId: userStore.user.id,
     username: userStore.user.username,
-    fullName: userStore.user.fullName,
+    nickname: userStore.user.nickname,
   })
   results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
@@ -327,8 +328,8 @@ onActivated(() => {
             v-for="(result, index) in results"
             :key="index"
             :class="{
-              'flex-row-reverse': result.username === userStore.user.username,
-              'flex-row': result.username !== userStore.user.username,
+              'flex-row-reverse': result.userId === userStore.user.id,
+              'flex-row': result.userId !== userStore.user.id,
             }"
           >
             <div>
@@ -336,12 +337,12 @@ onActivated(() => {
                 class="flex h-[44px] w-[44px] items-center justify-center rounded-full"
                 :class="{
                   'bg-[#3498db] text-white':
-                    result.username === userStore.user.username,
+                    result.userId === userStore.user.id,
                   'bg-[#FFFFFF] dark:bg-[#2C2C2C]':
-                    result.username !== userStore.user.username,
+                    result.userId !== userStore.user.id,
                 }"
               >
-                <span>{{ result.username?.[0]?.toUpperCase() }}</span>
+                <span>{{ result.nickname?.[0]?.toUpperCase() }}</span>
               </div>
             </div>
             <div

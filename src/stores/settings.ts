@@ -4,7 +4,7 @@ export const useSettingsStore = defineStore(
   'settings',
   () => {
     const settings = ref({
-      url: 'http://localhost:3000/',
+      url: 'http://localhost:3000/v1',
       wsUrl: 'ws://localhost:8080/',
       baseUrl: 'http://localhost:11434/v1',
       apiKey: 'ollama',

@@ -3,15 +3,15 @@ const userStore = useUserStore()
 const router = useRouter()
 
 const form = reactive({
+  nickname: '',
   username: '',
-  fullName: '',
   password: '',
   confirmPassword: '',
 })
 
 const rules = {
+  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  fullName: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
   password: [{ required: true, message: '请输入密码', trigger: 'blur' }],
   confirmPassword: [
     { required: true, message: '请输入确认密码', trigger: 'blur' },
@@ -38,12 +38,12 @@ const onSubmit = async () => {
     }
 
     await userStore.register({
+      nickname: form.nickname,
       username: form.username,
-      fullName: form.fullName,
       password: form.password,
     })
 
-    router.replace('/')
+    router.replace('/login')
   } catch (error) {
     console.error(error)
   }
@@ -54,11 +54,11 @@ const onSubmit = async () => {
   <div class="flex h-full items-center justify-center">
     <el-card>
       <el-form ref="formRef" :model="form" label-width="auto" :rules="rules">
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="form.nickname" placeholder="请输入昵称" />
+        </el-form-item>
         <el-form-item label="用户名" prop="username">
           <el-input v-model="form.username" placeholder="请输入用户名" />
-        </el-form-item>
-        <el-form-item label="昵称" prop="fullName">
-          <el-input v-model="form.fullName" placeholder="请输入昵称" />
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input

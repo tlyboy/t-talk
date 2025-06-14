@@ -12,7 +12,7 @@ const whiteList = ['/login', '/register', '/settings']
 router.beforeEach((to, _, next) => {
   const userStore = useUserStore()
 
-  if (!whiteList.includes(to.path) && !userStore.user.id) {
+  if (!whiteList.includes(to.path) && !userStore.user.token) {
     next('/login')
   } else {
     next()
