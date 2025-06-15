@@ -11,6 +11,12 @@ request.interceptors.request.use(
 
     config.baseURL = settingsStore.settings.url
 
+    const userStore = useUserStore()
+
+    if (userStore.user.token) {
+      config.headers.Authorization = `Bearer ${userStore.user.token}`
+    }
+
     return config
   },
   function (error) {

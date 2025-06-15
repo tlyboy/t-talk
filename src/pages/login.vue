@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 const userStore = useUserStore()
+const messageStore = useMessageStore()
 const router = useRouter()
 
 const form = reactive({
@@ -26,6 +27,7 @@ const onSubmit = async () => {
   try {
     await formRef.value?.validate()
     await userStore.login(form)
+    await messageStore.getChatList()
 
     router.replace('/')
   } catch (error) {

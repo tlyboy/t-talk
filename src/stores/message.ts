@@ -1,3 +1,6 @@
+import { getChatList as getChatListApi } from '@/api/chat'
+import { getMessageList as getMessageListApi } from '@/api/message'
+
 export const useMessageStore = defineStore(
   'message',
   () => {
@@ -7,6 +10,7 @@ export const useMessageStore = defineStore(
 
     const list = ref([
       {
+        id: 1,
         title: 'User 1',
         messages: [
           {
@@ -19,6 +23,7 @@ export const useMessageStore = defineStore(
         ],
       },
       {
+        id: 2,
         title: 'User 2',
         messages: [
           {
@@ -47,12 +52,25 @@ export const useMessageStore = defineStore(
       })
     })
 
+    const getChatList = async () => {
+      list.value = await getChatListApi()
+
+      if (list.value.length > 0) {
+        const res = await getMessageListApi({
+          chatId: list.value[0].id,
+        })
+
+        list.value[0].messages = res
+      }
+    }
+
     return {
       list,
       current,
       currentMessage,
       search,
       filteredList,
+      getChatList,
     }
   },
   {

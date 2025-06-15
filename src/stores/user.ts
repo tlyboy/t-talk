@@ -11,13 +11,11 @@ export const useUserStore = defineStore(
     })
 
     const register = async (data: any) => {
-      const res = await registerApi(data)
-      user.value = res
+      user.value = await registerApi(data)
     }
 
     const login = async (data: any) => {
-      const res = await loginApi(data)
-      user.value = res
+      user.value = await loginApi(data)
     }
 
     return {
