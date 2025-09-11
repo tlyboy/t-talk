@@ -208,6 +208,7 @@ const handleExit = async () => {
 
 const handleSubmit = () => {
   messageStore.list.push({
+    id: Date.now(),
     title: form.value.username,
     messages: [],
   })
