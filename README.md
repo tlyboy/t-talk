@@ -1,3 +1,3 @@
-# T-Talk
+# t-talk
 
 💬 T-Talk
