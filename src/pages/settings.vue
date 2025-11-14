@@ -38,7 +38,12 @@ const resetForm = () => {
 }
 
 const logout = () => {
-  userStore.user = {}
+  userStore.user = {
+    token: '',
+    id: 0,
+    nickname: '',
+    username: '',
+  }
   ElMessage.success('退出登录成功')
   router.push('/login')
 }
