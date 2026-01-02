@@ -7,3 +7,7 @@ export const register = (data: any): Promise<any> => {
 export const login = (data: any): Promise<any> => {
   return request.post('/user/login', data)
 }
+
+export const getUserList = (): Promise<any> => {
+  return request.get('/user/list')
+}

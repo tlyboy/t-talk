@@ -6,23 +6,42 @@ import LinkAttributes from 'markdown-it-link-attributes'
 import MarkdownItCopyCode, { useCopyCode } from 'markdown-it-copy-code'
 import 'markdown-it-copy-code/styles/base.css'
 import 'markdown-it-copy-code/styles/medium.css'
+import { useChatWebSocket } from '@/composables/useWebSocket'
 
 const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
+const friendStore = useFriendStore()
+const { connect, disconnect, status, isAuthenticated } = useChatWebSocket()
+
 const results = ref<any[]>([])
 const text = ref('')
 const drawer = ref(false)
+const sending = ref(false)
+const chatListLoading = ref(false)
+const messagesLoading = ref(false)
+const creatingChat = ref(false)
+const clearingChat = ref(false)
+const exitingChat = ref(false)
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
 const dialogVisible = ref(false)
 const formRef = useTemplateRef('formRef')
 const usernameRef = useTemplateRef('usernameRef')
 const form = ref({
-  username: '',
+  title: '',
+  memberIds: [] as number[],
 })
 
 const md = MarkdownIt()
+
+// 安全的 markdown 渲染
+const renderMd = (content: any) => {
+  if (typeof content !== 'string') {
+    return content?.toString?.() || ''
+  }
+  return md.render(content)
+}
 
 const initMd = async () => {
   md.use(LinkAttributes, {
@@ -75,19 +94,27 @@ const handleEnter = (event: KeyboardEvent) => {
 }
 
 const handleSend = async () => {
-  messageStore.currentMessage?.messages.push({
-    role: 'user',
-    content: text.value,
-    userId: userStore.user.id,
-    username: userStore.user.username,
-    nickname: userStore.user.nickname,
-  })
-  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-    ...item,
-    content: md.render(item.content),
-  }))
-  text.value = ''
-  scrollResultToBottom()
+  const chatId = messageStore.currentMessage?.id
+  if (!chatId || !text.value.trim()) return
+
+  sending.value = true
+  try {
+    // 调用 API 发送消息
+    await messageStore.sendMessageToChat(chatId, text.value)
+
+    // 更新渲染结果
+    results.value = messageStore.currentMessage?.messages.map((item: any) => ({
+      ...item,
+      content: renderMd(item.content),
+    }))
+    text.value = ''
+    scrollResultToBottom()
+  } catch (error) {
+    console.error('发送消息失败:', error)
+    ElMessage.error('发送消息失败')
+  } finally {
+    sending.value = false
+  }
 }
 
 const handlePolish = async () => {
@@ -165,11 +192,25 @@ const handlePolish = async () => {
   }
 }
 
-const handleSelectMessage = (index: number) => {
+const handleSelectMessage = async (index: number) => {
   messageStore.current = index
+
+  // 如果消息列表为空，从服务器加载
+  const chat = messageStore.currentMessage
+  if (chat && chat.messages.length === 0) {
+    messagesLoading.value = true
+    try {
+      await messageStore.loadMessages(chat.id)
+    } catch (error) {
+      console.error('加载消息失败:', error)
+    } finally {
+      messagesLoading.value = false
+    }
+  }
+
   results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
-    content: md.render(item.content),
+    content: renderMd(item.content),
   }))
   scrollResultToBottom()
 }
@@ -181,9 +222,20 @@ const handleClear = async () => {
     type: 'warning',
   })
 
-  messageStore.currentMessage.messages = []
-  results.value = []
-  text.value = ''
+  const chatId = messageStore.currentMessage?.id
+  if (chatId) {
+    clearingChat.value = true
+    try {
+      await messageStore.clearMessages(chatId)
+      results.value = []
+      text.value = ''
+    } catch (error) {
+      console.error('清空聊天记录失败:', error)
+      ElMessage.error('清空聊天记录失败')
+    } finally {
+      clearingChat.value = false
+    }
+  }
 }
 
 const handleExit = async () => {
@@ -193,31 +245,49 @@ const handleExit = async () => {
     type: 'warning',
   })
 
-  drawer.value = false
-  messageStore.list.splice(messageStore.current, 1)
-  messageStore.current =
-    messageStore.current > messageStore.list.length - 1
-      ? messageStore.list.length - 1
-      : messageStore.current
-  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-    ...item,
-    content: md.render(item.content),
-  }))
-  text.value = ''
+  const chatId = messageStore.currentMessage?.id
+  if (chatId) {
+    exitingChat.value = true
+    try {
+      await messageStore.removeChat(chatId)
+      drawer.value = false
+      results.value = messageStore.currentMessage?.messages.map((item: any) => ({
+        ...item,
+        content: renderMd(item.content),
+      })) || []
+      text.value = ''
+    } catch (error) {
+      console.error('删除聊天失败:', error)
+      ElMessage.error('删除聊天失败')
+    } finally {
+      exitingChat.value = false
+    }
+  }
 }
 
-const handleSubmit = () => {
-  messageStore.list.push({
-    id: Date.now(),
-    title: form.value.username,
-    messages: [],
-  })
-  messageStore.current = messageStore.list.length - 1
-  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-    ...item,
-    content: md.render(item.content),
-  }))
-  dialogVisible.value = false
+const handleSubmit = async () => {
+  if (!form.value.title.trim()) {
+    ElMessage.warning('请输入群聊名称')
+    return
+  }
+
+  creatingChat.value = true
+  try {
+    await messageStore.createChat({
+      title: form.value.title,
+      type: 'group',
+      memberIds: form.value.memberIds,
+    })
+    results.value = []
+    dialogVisible.value = false
+    form.value.title = ''
+    form.value.memberIds = []
+  } catch (error: any) {
+    console.error('创建群聊失败:', error)
+    ElMessage.error(error.response?.data?.message || '创建群聊失败')
+  } finally {
+    creatingChat.value = false
+  }
 }
 
 const resetForm = () => {
@@ -226,6 +296,14 @@ const resetForm = () => {
 
 const handleAdd = async () => {
   resetForm()
+  // 加载好友列表
+  if (friendStore.friends.length === 0) {
+    try {
+      await friendStore.getFriendList()
+    } catch (error) {
+      console.error('获取好友列表失败:', error)
+    }
+  }
   dialogVisible.value = true
 }
 
@@ -235,21 +313,56 @@ const opened = async () => {
 
 onMounted(async () => {
   await initMd()
+
+  // 加载聊天列表
+  chatListLoading.value = true
+  try {
+    await messageStore.getChatList()
+  } catch (error) {
+    console.error('加载聊天列表失败:', error)
+  } finally {
+    chatListLoading.value = false
+  }
+
+  // 渲染当前聊天的消息
   results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
-    content: md.render(item.content),
-  }))
+    content: renderMd(item.content),
+  })) || []
+
   useCopyCode()
   scrollResultToBottom()
+
+  // 建立 WebSocket 连接
+  connect()
+})
+
+onUnmounted(() => {
+  disconnect()
 })
 
 onActivated(() => {
   results.value = messageStore.currentMessage?.messages.map((item: any) => ({
     ...item,
-    content: md.render(item.content),
-  }))
+    content: renderMd(item.content),
+  })) || []
   scrollResultToBottom()
 })
+
+// 监听当前聊天消息变化（用于 WebSocket 接收新消息时自动更新）
+watch(
+  () => messageStore.currentMessage?.messages,
+  (messages) => {
+    if (messages) {
+      results.value = messages.map((item: any) => ({
+        ...item,
+        content: renderMd(item.content),
+      }))
+      scrollResultToBottom()
+    }
+  },
+  { deep: true },
+)
 </script>
 
 <template>
@@ -290,6 +403,7 @@ onActivated(() => {
     <div class="flex flex-1 overflow-hidden">
       <div
         class="w-52 overflow-y-auto border-r border-[#DADADA] dark:border-[#292929]"
+        v-loading="chatListLoading"
       >
         <div
           v-for="(item, index) in messageStore.filteredList"
@@ -317,12 +431,14 @@ onActivated(() => {
             </div>
           </div>
         </div>
+        <el-empty v-if="!chatListLoading && messageStore.filteredList.length === 0" description="暂无聊天" />
       </div>
 
       <div class="flex flex-1 flex-col overflow-hidden">
         <div
           ref="resultRef"
           class="flex flex-1 flex-col gap-4 overflow-y-auto p-4"
+          v-loading="messagesLoading"
         >
           <div
             class="flex gap-4"
@@ -374,7 +490,12 @@ onActivated(() => {
           />
 
           <div class="flex justify-end">
-            <el-button type="primary" :disabled="!text" @click="handleSend">
+            <el-button
+              type="primary"
+              :disabled="!text || sending"
+              :loading="sending"
+              @click="handleSend"
+            >
               <template #icon>
                 <div class="i-carbon-send"></div>
               </template>
@@ -385,7 +506,7 @@ onActivated(() => {
       </div>
     </div>
 
-    <el-dialog v-model="dialogVisible" @opened="opened">
+    <el-dialog v-model="dialogVisible" title="新建群聊" @opened="opened">
       <el-form
         ref="formRef"
         label-width="auto"
@@ -393,8 +514,41 @@ onActivated(() => {
         :model="form"
         @submit.prevent="handleSubmit"
       >
-        <el-form-item label="用户名" prop="username">
-          <el-input ref="usernameRef" v-model="form.username" autofocus />
+        <el-form-item label="群聊名称" prop="title">
+          <el-input ref="usernameRef" v-model="form.title" autofocus />
+        </el-form-item>
+        <el-form-item label="群成员（从好友中选择）">
+          <el-select
+            v-model="form.memberIds"
+            placeholder="选择好友加入群聊"
+            multiple
+            filterable
+            class="w-full"
+          >
+            <el-option
+              v-for="friend in friendStore.friends"
+              :key="friend.id"
+              :label="friend.nickname || friend.username"
+              :value="friend.id"
+            >
+              <div class="flex items-center gap-2">
+                <span>{{ friend.nickname || friend.username }}</span>
+                <el-tag v-if="friend.isOnline" type="success" size="small">在线</el-tag>
+              </div>
+            </el-option>
+          </el-select>
+          <div v-if="friendStore.friends.length === 0" class="mt-1 text-xs text-gray-500">
+            暂无好友，请先到好友页面添加好友
+          </div>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" :disabled="creatingChat" @click="handleSubmit">
+            <template v-if="creatingChat">
+              <span class="i-carbon-circle-dash animate-spin mr-1"></span>
+              创建中...
+            </template>
+            <template v-else>创建群聊</template>
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -408,13 +562,15 @@ onActivated(() => {
         </el-form>
 
         <div>
-          <el-button type="warning" link @click="handleClear"
-            >清空聊天记录</el-button
-          >
+          <el-button type="warning" link :loading="clearingChat" @click="handleClear">
+            清空聊天记录
+          </el-button>
         </div>
 
         <div>
-          <el-button type="danger" link @click="handleExit">退出会话</el-button>
+          <el-button type="danger" link :loading="exitingChat" @click="handleExit">
+            退出会话
+          </el-button>
         </div>
       </div>
     </el-drawer>

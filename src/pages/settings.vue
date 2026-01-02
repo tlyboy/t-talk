@@ -3,8 +3,6 @@ const settingsStore = useSettingsStore()
 const userStore = useUserStore()
 const router = useRouter()
 
-const messageStore = useMessageStore()
-
 const formRef = useTemplateRef('formRef')
 
 const form = reactive({
@@ -46,16 +44,6 @@ const logout = () => {
   }
   ElMessage.success('退出登录成功')
   router.push('/login')
-}
-
-const handleClear = async () => {
-  await ElMessageBox.confirm('确定清空全部聊天记录吗？', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
-
-  messageStore.list = []
 }
 
 const handleClearCache = async () => {
@@ -121,12 +109,6 @@ const handleClearCache = async () => {
             <div class="i-carbon-logout"></div>
           </template>
           退出登录
-        </el-button>
-        <el-button type="warning" plain @click="handleClear">
-          <template #icon>
-            <div class="i-carbon-delete"></div>
-          </template>
-          清空全部聊天记录
         </el-button>
         <el-button type="danger" plain @click="handleClearCache">
           <template #icon>
