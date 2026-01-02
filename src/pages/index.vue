@@ -12,7 +12,7 @@ const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
 const friendStore = useFriendStore()
-const { connect, disconnect, status, isAuthenticated } = useChatWebSocket()
+const { connect, disconnect } = useChatWebSocket()
 
 const results = ref<any[]>([])
 const text = ref('')

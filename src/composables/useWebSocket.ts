@@ -78,7 +78,7 @@ export function useChatWebSocket() {
       case 'auth:error':
         isAuthenticated.value = false
         connectionError.value = message.payload?.message || '认证失败'
-        ElMessage.error(connectionError.value)
+        ElMessage.error(connectionError.value!)
         break
 
       case 'pong':
