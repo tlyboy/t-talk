@@ -12,6 +12,7 @@ export interface Friend {
   id: number
   username: string
   nickname: string
+  avatar?: string
   isOnline: boolean
   friendshipId: number
   createdAt: string
@@ -22,6 +23,7 @@ export interface FriendRequest {
   userId: number
   username: string
   nickname: string
+  avatar?: string
   status: 'pending' | 'accepted' | 'rejected'
   createdAt: string
 }

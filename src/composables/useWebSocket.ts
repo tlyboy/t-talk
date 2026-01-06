@@ -148,7 +148,7 @@ export function useChatWebSocket() {
 
       case 'chat:invite':
         // 群主收到新的入群邀请
-        const { chatId: inviteChatId, chatTitle, invite } = message.payload || {}
+        const { chatTitle, invite } = message.payload || {}
         if (invite) {
           // 添加到待审核邀请列表
           messageStore.addPendingInvite({
@@ -165,7 +165,7 @@ export function useChatWebSocket() {
 
       case 'chat:invite:result':
         // 邀请结果通知（邀请人和被邀请人都会收到）
-        const { chatId: resultChatId, chatTitle: resultChatTitle, action, inviterId, inviteeId } = message.payload || {}
+        const { chatTitle: resultChatTitle, action, inviterId, inviteeId } = message.payload || {}
         const isInviter = inviterId === userStore.user.id
         const isInvitee = inviteeId === userStore.user.id
 
