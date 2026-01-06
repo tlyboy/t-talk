@@ -17,7 +17,10 @@ export function useUpload() {
   const validateFile = (file: File): { valid: boolean; error?: string } => {
     const maxSize = isMedia(file) ? MAX_MEDIA_SIZE : MAX_FILE_SIZE
     if (file.size > maxSize) {
-      return { valid: false, error: `文件大小超过限制 (最大 ${maxSize / 1024 / 1024}MB)` }
+      return {
+        valid: false,
+        error: `文件大小超过限制 (最大 ${maxSize / 1024 / 1024}MB)`,
+      }
     }
     return { valid: true }
   }

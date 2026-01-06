@@ -1,4 +1,8 @@
-import { login as loginApi, register as registerApi, updateNickname as updateNicknameApi } from '@/api/user'
+import {
+  login as loginApi,
+  register as registerApi,
+  updateNickname as updateNicknameApi,
+} from '@/api/user'
 import { updateAvatar as updateAvatarApi } from '@/api/upload'
 
 export const useUserStore = defineStore(

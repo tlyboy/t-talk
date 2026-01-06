@@ -14,7 +14,7 @@ const userStore = useUserStore()
             :avatar="userStore.user.avatar"
             :name="userStore.user.nickname || userStore.user.username"
             :size="40"
-            class="cursor-pointer hover:opacity-80 transition-opacity"
+            class="cursor-pointer transition-opacity hover:opacity-80"
             :class="{ 'ring-2 ring-[#3498db]': $route.path === '/profile' }"
           />
         </RouterLink>

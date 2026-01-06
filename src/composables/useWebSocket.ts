@@ -165,7 +165,12 @@ export function useChatWebSocket() {
 
       case 'chat:invite:result':
         // 邀请结果通知（邀请人和被邀请人都会收到）
-        const { chatTitle: resultChatTitle, action, inviterId, inviteeId } = message.payload || {}
+        const {
+          chatTitle: resultChatTitle,
+          action,
+          inviterId,
+          inviteeId,
+        } = message.payload || {}
         const isInviter = inviterId === userStore.user.id
         const isInvitee = inviteeId === userStore.user.id
 

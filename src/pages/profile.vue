@@ -52,8 +52,8 @@ const logout = () => {
 
 <template>
   <div class="h-full overflow-y-auto p-6">
-    <div class="max-w-md mx-auto">
-      <h2 class="text-xl font-semibold mb-6">个人资料</h2>
+    <div class="mx-auto max-w-md">
+      <h2 class="mb-6 text-xl font-semibold">个人资料</h2>
 
       <!-- 隐藏的头像文件输入 -->
       <input
@@ -65,8 +65,10 @@ const logout = () => {
       />
 
       <!-- 头像设置 -->
-      <div class="flex flex-col items-center gap-4 mb-8 p-6 rounded-lg bg-white dark:bg-[#2C2C2C]">
-        <div class="relative cursor-pointer group" @click="triggerAvatarSelect">
+      <div
+        class="mb-8 flex flex-col items-center gap-4 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]"
+      >
+        <div class="group relative cursor-pointer" @click="triggerAvatarSelect">
           <UserAvatar
             :avatar="userStore.user.avatar"
             :name="userStore.user.nickname || userStore.user.username"
@@ -85,25 +87,25 @@ const logout = () => {
           </div>
           <div
             v-else
-            class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity"
+            class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100"
           >
-            <div class="i-carbon-camera text-white text-3xl"></div>
+            <div class="i-carbon-camera text-3xl text-white"></div>
           </div>
         </div>
         <span class="text-sm text-gray-500">点击更换头像</span>
       </div>
 
       <!-- 基本信息 -->
-      <div class="space-y-4 p-6 rounded-lg bg-white dark:bg-[#2C2C2C]">
+      <div class="space-y-4 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
         <div>
-          <label class="block text-sm text-gray-500 mb-1">用户名</label>
+          <label class="mb-1 block text-sm text-gray-500">用户名</label>
           <div class="text-base">{{ userStore.user.username }}</div>
         </div>
 
         <el-divider />
 
         <div>
-          <label class="block text-sm text-gray-500 mb-2">昵称</label>
+          <label class="mb-2 block text-sm text-gray-500">昵称</label>
           <div class="flex gap-2">
             <el-input v-model="nickname" placeholder="请输入昵称" />
             <el-button
@@ -119,7 +121,7 @@ const logout = () => {
       </div>
 
       <!-- 退出登录 -->
-      <div class="mt-6 p-6 rounded-lg bg-white dark:bg-[#2C2C2C]">
+      <div class="mt-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
         <el-button type="danger" class="w-full" @click="logout">
           <template #icon>
             <div class="i-carbon-logout"></div>

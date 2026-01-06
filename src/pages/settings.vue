@@ -33,11 +33,15 @@ const resetForm = () => {
 }
 
 const handleClearCache = async () => {
-  await ElMessageBox.confirm('确定清除缓存吗？这将清除所有本地数据并退出登录。', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning',
-  })
+  await ElMessageBox.confirm(
+    '确定清除缓存吗？这将清除所有本地数据并退出登录。',
+    '提示',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning',
+    },
+  )
 
   localStorage.clear()
   ElMessage.success('清除缓存成功')
@@ -47,16 +51,22 @@ const handleClearCache = async () => {
 
 <template>
   <div class="h-full overflow-y-auto p-6">
-    <div class="max-w-2xl mx-auto">
-      <h2 class="text-xl font-semibold mb-6">应用设置</h2>
+    <div class="mx-auto max-w-2xl">
+      <h2 class="mb-6 text-xl font-semibold">应用设置</h2>
 
       <!-- 服务器设置 -->
-      <div class="mb-6 p-6 rounded-lg bg-white dark:bg-[#2C2C2C]">
-        <h3 class="text-base font-medium mb-4 flex items-center gap-2">
+      <div class="mb-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
+        <h3 class="mb-4 flex items-center gap-2 text-base font-medium">
           <div class="i-carbon-server"></div>
           服务器配置
         </h3>
-        <el-form ref="formRef" :model="form" label-width="auto" label-position="top" :rules="rules">
+        <el-form
+          ref="formRef"
+          :model="form"
+          label-width="auto"
+          label-position="top"
+          :rules="rules"
+        >
           <el-form-item label="API 地址" prop="url">
             <el-input v-model="form.url" placeholder="请输入API地址" />
           </el-form-item>
@@ -67,12 +77,17 @@ const handleClearCache = async () => {
       </div>
 
       <!-- AI 设置 -->
-      <div class="mb-6 p-6 rounded-lg bg-white dark:bg-[#2C2C2C]">
-        <h3 class="text-base font-medium mb-4 flex items-center gap-2">
+      <div class="mb-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
+        <h3 class="mb-4 flex items-center gap-2 text-base font-medium">
           <div class="i-carbon-machine-learning-model"></div>
           AI 配置
         </h3>
-        <el-form :model="form" label-width="auto" label-position="top" :rules="rules">
+        <el-form
+          :model="form"
+          label-width="auto"
+          label-position="top"
+          :rules="rules"
+        >
           <el-form-item label="模型地址" prop="baseUrl">
             <el-input v-model="form.baseUrl" placeholder="请输入AI模型地址" />
           </el-form-item>
@@ -89,7 +104,9 @@ const handleClearCache = async () => {
           </el-form-item>
           <el-form-item label="视觉识别">
             <el-switch v-model="form.visionEnabled" />
-            <span class="ml-2 text-sm text-gray-500">开启后 AI 总结支持识别图片内容</span>
+            <span class="ml-2 text-sm text-gray-500"
+              >开启后 AI 总结支持识别图片内容</span
+            >
           </el-form-item>
           <el-form-item label="润色提示词" prop="polishPrompt">
             <el-input

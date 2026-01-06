@@ -22,7 +22,9 @@ export const uploadFile = (
     },
     onUploadProgress: (progressEvent) => {
       if (progressEvent.total && onProgress) {
-        const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+        const percent = Math.round(
+          (progressEvent.loaded * 100) / progressEvent.total,
+        )
         onProgress(percent)
       }
     },
@@ -30,6 +32,8 @@ export const uploadFile = (
 }
 
 // 更新用户头像
-export const updateAvatar = (avatar: string): Promise<{ success: boolean; avatar: string }> => {
+export const updateAvatar = (
+  avatar: string,
+): Promise<{ success: boolean; avatar: string }> => {
   return request.put('/user/avatar', { avatar })
 }

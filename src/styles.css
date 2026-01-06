@@ -6,12 +6,21 @@
   scale: 1.2;
 }
 
-@plugin "@tailwindcss/typography";
+@plugin '@tailwindcss/typography';
 
 html,
 body,
 #app {
   height: 100%;
+}
+
+/* 禁用 Apple 设备输入框首字母自动大写和 CSS 大写转换 */
+input,
+textarea,
+.el-input__inner,
+.el-textarea__inner {
+  text-transform: none !important;
+  -webkit-text-transform: none !important;
 }
 
 html {

@@ -28,6 +28,7 @@ pnpm tauri build
 ## 技术架构
 
 ### 前端技术栈
+
 - **框架**: Vue 3 + TypeScript
 - **构建工具**: Vite (使用 rolldown-vite)
 - **状态管理**: Pinia + pinia-plugin-persistedstate（持久化存储）
@@ -37,17 +38,21 @@ pnpm tauri build
 - **Markdown 渲染**: markdown-it + Shiki 代码高亮
 
 ### 桌面端
+
 - **框架**: Tauri 2
 - **开发端口**: 1420
 
 ### 自动导入配置
+
 项目使用 unplugin 系列插件实现自动导入：
+
 - **unplugin-vue-router**: 基于文件的路由 (`src/pages/` 目录)
 - **unplugin-auto-import**: 自动导入 Vue/VueUse/Pinia API 和 `src/composables/`、`src/stores/` 目录
 - **unplugin-vue-components**: 自动导入组件和 Element Plus
 - **vite-plugin-vue-layouts**: 布局系统 (`src/layouts/` 目录)
 
 ### 目录结构关键点
+
 - `src/pages/` - 基于文件的路由页面
 - `src/layouts/` - 页面布局组件
 - `src/stores/` - Pinia stores（自动导入）
@@ -56,10 +61,13 @@ pnpm tauri build
 - `src-tauri/` - Tauri Rust 后端代码
 
 ### 路由守卫
+
 路由白名单：`/login`、`/register`、`/settings`，其他页面需要用户 token 认证。
 
 ### API 配置
+
 在 `src/stores/settings.ts` 中配置：
+
 - `url` - 后端 API 地址
 - `wsUrl` - WebSocket 地址
 - `baseUrl` - AI 模型 API 地址（默认 Ollama）

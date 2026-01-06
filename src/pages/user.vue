@@ -18,7 +18,10 @@ const processingInvite = ref<number | null>(null)
 onMounted(async () => {
   pageLoading.value = true
   try {
-    await Promise.all([friendStore.getFriendList(), friendStore.getFriendRequests()])
+    await Promise.all([
+      friendStore.getFriendList(),
+      friendStore.getFriendRequests(),
+    ])
   } finally {
     pageLoading.value = false
   }
@@ -107,7 +110,10 @@ const handleStartChat = async (friend: any) => {
   }
 }
 
-const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => {
+const handleProcessInvite = async (
+  invite: any,
+  action: 'accept' | 'reject',
+) => {
   processingInvite.value = invite.id
   try {
     await messageStore.processInvite(invite.chatId, invite.id, action)
@@ -121,7 +127,7 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
 </script>
 
 <template>
-  <div class="h-full flex flex-col p-4" v-loading="pageLoading">
+  <div class="flex h-full flex-col p-4" v-loading="pageLoading">
     <el-tabs v-model="activeTab">
       <!-- 好友列表 -->
       <el-tab-pane label="好友" name="friends">
@@ -169,7 +175,10 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               </el-button>
             </div>
           </div>
-          <el-empty v-if="friendStore.friends.length === 0" description="暂无好友" />
+          <el-empty
+            v-if="friendStore.friends.length === 0"
+            description="暂无好友"
+          />
         </div>
       </el-tab-pane>
 
@@ -221,7 +230,10 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               </el-button>
             </div>
           </div>
-          <el-empty v-if="friendStore.requests.length === 0" description="暂无好友申请" />
+          <el-empty
+            v-if="friendStore.requests.length === 0"
+            description="暂无好友申请"
+          />
         </div>
       </el-tab-pane>
 
@@ -251,9 +263,15 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
                 bg-color="#9ca3af"
               />
               <div>
-                <div>{{ invite.inviteeNickname || invite.inviteeUsername }}</div>
+                <div>
+                  {{ invite.inviteeNickname || invite.inviteeUsername }}
+                </div>
                 <div class="text-xs text-gray-500">
-                  由 {{ invite.inviterNickname || invite.inviterUsername }} 邀请加入「{{ invite.chatTitle }}」
+                  由
+                  {{
+                    invite.inviterNickname || invite.inviterUsername
+                  }}
+                  邀请加入「{{ invite.chatTitle }}」
                 </div>
               </div>
             </div>
@@ -275,7 +293,10 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               </el-button>
             </div>
           </div>
-          <el-empty v-if="messageStore.pendingInvites.length === 0" description="暂无入群邀请" />
+          <el-empty
+            v-if="messageStore.pendingInvites.length === 0"
+            description="暂无入群邀请"
+          />
         </div>
       </el-tab-pane>
 
@@ -288,7 +309,11 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               placeholder="输入用户名或昵称搜索"
               @keyup.enter="handleSearch"
             />
-            <el-button type="primary" :loading="searchLoading" @click="handleSearch">
+            <el-button
+              type="primary"
+              :loading="searchLoading"
+              @click="handleSearch"
+            >
               搜索
             </el-button>
           </div>
@@ -310,7 +335,8 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               </div>
               <div>
                 <el-tag v-if="user.isFriend" type="success">已是好友</el-tag>
-                <el-tag v-else-if="user.isPending && user.pendingType === 'sent'"
+                <el-tag
+                  v-else-if="user.isPending && user.pendingType === 'sent'"
                   >已申请</el-tag
                 >
                 <el-tag
@@ -331,7 +357,9 @@ const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => 
               </div>
             </div>
             <el-empty
-              v-if="searchKeyword && searchResults.length === 0 && !searchLoading"
+              v-if="
+                searchKeyword && searchResults.length === 0 && !searchLoading
+              "
               description="未找到用户"
             />
           </div>

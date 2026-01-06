@@ -20,7 +20,10 @@ const props = withDefaults(
 const avatarUrl = computed(() => {
   if (!props.avatar) return null
   // 如果已经是完整 URL 则直接返回
-  if (props.avatar.startsWith('http://') || props.avatar.startsWith('https://')) {
+  if (
+    props.avatar.startsWith('http://') ||
+    props.avatar.startsWith('https://')
+  ) {
     return props.avatar
   }
   // 否则拼接服务器地址
@@ -43,14 +46,17 @@ const sizeStyle = computed(() => ({
 
 <template>
   <div
-    class="flex shrink-0 items-center justify-center rounded-full overflow-hidden"
-    :style="[sizeStyle, !avatarUrl ? { backgroundColor: bgColor, color: textColor } : {}]"
+    class="flex shrink-0 items-center justify-center overflow-hidden rounded-full"
+    :style="[
+      sizeStyle,
+      !avatarUrl ? { backgroundColor: bgColor, color: textColor } : {},
+    ]"
   >
     <img
       v-if="avatarUrl"
       :src="avatarUrl"
       :alt="name"
-      class="w-full h-full object-cover"
+      class="h-full w-full object-cover"
     />
     <span v-else>{{ initial }}</span>
   </div>

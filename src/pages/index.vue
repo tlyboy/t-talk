@@ -44,7 +44,8 @@ let justEnteredSelectMode = false
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
 const fileInputRef = useTemplateRef<HTMLInputElement>('fileInputRef')
-const chatAvatarInputRef = useTemplateRef<HTMLInputElement>('chatAvatarInputRef')
+const chatAvatarInputRef =
+  useTemplateRef<HTMLInputElement>('chatAvatarInputRef')
 const dialogVisible = ref(false)
 const formRef = useTemplateRef('formRef')
 const usernameRef = useTemplateRef('usernameRef')
@@ -244,7 +245,10 @@ const handleChatAvatarSelect = async (event: Event) => {
   if (file && messageStore.currentMessage) {
     const result = await upload(file)
     if (result) {
-      await messageStore.updateChatAvatar(messageStore.currentMessage.id, result.url)
+      await messageStore.updateChatAvatar(
+        messageStore.currentMessage.id,
+        result.url,
+      )
       ElMessage.success('群头像更新成功')
     }
   }
@@ -415,7 +419,9 @@ const handleSummary = async () => {
 
   // 获取选中的消息内容
   const messages = messageStore.currentMessage?.messages || []
-  const selectedMsgs = messages.filter((m: any) => selectedMessages.value.includes(m.id))
+  const selectedMsgs = messages.filter((m: any) =>
+    selectedMessages.value.includes(m.id),
+  )
 
   // 构建用户消息内容
   let userContent: any
@@ -437,7 +443,10 @@ const handleSummary = async () => {
 
     // 添加文本内容
     const textContent = selectedMsgs
-      .map((m: any) => `${m.nickname || m.username}: ${m.content.replace(/!\[.*?\]\(.*?\)/g, '[图片]')}`)
+      .map(
+        (m: any) =>
+          `${m.nickname || m.username}: ${m.content.replace(/!\[.*?\]\(.*?\)/g, '[图片]')}`,
+      )
       .join('\n')
     contentParts.push({ type: 'text', text: textContent })
 
@@ -618,10 +627,11 @@ const handleExit = async () => {
     try {
       await messageStore.removeChat(chatId)
       drawer.value = false
-      results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-        ...item,
-        content: renderMd(item.content),
-      })) || []
+      results.value =
+        messageStore.currentMessage?.messages.map((item: any) => ({
+          ...item,
+          content: renderMd(item.content),
+        })) || []
       text.value = ''
     } catch (error) {
       console.error('删除聊天失败:', error)
@@ -646,10 +656,11 @@ const handleDismissGroup = async () => {
     try {
       await messageStore.removeChat(chatId)
       drawer.value = false
-      results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-        ...item,
-        content: renderMd(item.content),
-      })) || []
+      results.value =
+        messageStore.currentMessage?.messages.map((item: any) => ({
+          ...item,
+          content: renderMd(item.content),
+        })) || []
       text.value = ''
       ElMessage.success('群聊已解散')
     } catch (error) {
@@ -769,7 +780,10 @@ const handleInvite = async () => {
 }
 
 // 审核邀请
-const handleProcessInvite = async (inviteId: number, action: 'accept' | 'reject') => {
+const handleProcessInvite = async (
+  inviteId: number,
+  action: 'accept' | 'reject',
+) => {
   const chatId = messageStore.currentMessage?.id
   if (!chatId) return
 
@@ -845,20 +859,22 @@ onMounted(async () => {
   }
 
   // 渲染当前聊天的消息
-  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-    ...item,
-    content: renderMd(item.content),
-  })) || []
+  results.value =
+    messageStore.currentMessage?.messages.map((item: any) => ({
+      ...item,
+      content: renderMd(item.content),
+    })) || []
 
   useCopyCode()
   scrollResultToBottom()
 })
 
 onActivated(() => {
-  results.value = messageStore.currentMessage?.messages.map((item: any) => ({
-    ...item,
-    content: renderMd(item.content),
-  })) || []
+  results.value =
+    messageStore.currentMessage?.messages.map((item: any) => ({
+      ...item,
+      content: renderMd(item.content),
+    })) || []
   scrollResultToBottom()
 })
 
@@ -912,7 +928,12 @@ watch(
       <div
         class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
       >
-        <div>{{ messageStore.currentMessage?.displayName || messageStore.currentMessage?.title }}</div>
+        <div>
+          {{
+            messageStore.currentMessage?.displayName ||
+            messageStore.currentMessage?.title
+          }}
+        </div>
         <div
           v-if="messageStore.currentMessage"
           class="i-carbon-overflow-menu-horizontal icon-btn text-xl"
@@ -949,16 +970,21 @@ watch(
             </div>
           </div>
         </div>
-        <el-empty v-if="!chatListLoading && messageStore.filteredList.length === 0" description="暂无聊天" />
+        <el-empty
+          v-if="!chatListLoading && messageStore.filteredList.length === 0"
+          description="暂无聊天"
+        />
       </div>
 
       <div class="flex flex-1 flex-col overflow-hidden">
         <!-- 选择模式工具栏 -->
         <div
           v-if="selectMode"
-          class="flex items-center justify-between border-b border-[#DADADA] px-4 py-2 dark:border-[#292929] bg-blue-50 dark:bg-blue-900/20"
+          class="flex items-center justify-between border-b border-[#DADADA] bg-blue-50 px-4 py-2 dark:border-[#292929] dark:bg-blue-900/20"
         >
-          <span class="text-sm">已选择 {{ selectedMessages.length }} 条消息</span>
+          <span class="text-sm"
+            >已选择 {{ selectedMessages.length }} 条消息</span
+          >
           <div class="flex gap-2">
             <el-button size="small" @click="selectAllMessages">全选</el-button>
             <el-button size="small" @click="exitSelectMode">取消</el-button>
@@ -971,7 +997,7 @@ watch(
           v-loading="messagesLoading"
         >
           <div
-            class="flex gap-2 items-start"
+            class="flex items-start gap-2"
             v-for="(result, index) in results"
             :key="index"
             @mousedown="!selectMode && handleLongPressStart(result.id)"
@@ -991,7 +1017,7 @@ watch(
             />
             <!-- 消息内容区域 -->
             <div
-              class="flex gap-4 flex-1 overflow-hidden"
+              class="flex flex-1 gap-4 overflow-hidden"
               :class="{
                 'flex-row-reverse': result.userId === userStore.user.id,
                 'flex-row': result.userId !== userStore.user.id,
@@ -1000,8 +1026,12 @@ watch(
               <UserAvatar
                 :avatar="result.avatar"
                 :name="result.nickname"
-                :bg-color="result.userId === userStore.user.id ? '#3498db' : '#FFFFFF'"
-                :text-color="result.userId === userStore.user.id ? 'white' : '#333'"
+                :bg-color="
+                  result.userId === userStore.user.id ? '#3498db' : '#FFFFFF'
+                "
+                :text-color="
+                  result.userId === userStore.user.id ? 'white' : '#333'
+                "
               />
               <div
                 class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
@@ -1077,7 +1107,11 @@ watch(
             class="h-full w-full resize-none rounded outline-none"
             v-model="text"
             :rows="3"
-            :placeholder="isDragOver ? '松开以上传文件...' : '输入消息，按 Enter 发送，Shift+Enter 换行'"
+            :placeholder="
+              isDragOver
+                ? '松开以上传文件...'
+                : '输入消息，按 Enter 发送，Shift+Enter 换行'
+            "
             @keydown.enter="handleEnter"
             @paste="handlePaste"
           />
@@ -1131,18 +1165,27 @@ watch(
                   :size="24"
                 />
                 <span>{{ friend.nickname || friend.username }}</span>
-                <el-tag v-if="friend.isOnline" type="success" size="small">在线</el-tag>
+                <el-tag v-if="friend.isOnline" type="success" size="small"
+                  >在线</el-tag
+                >
               </div>
             </el-option>
           </el-select>
-          <div v-if="friendStore.friends.length === 0" class="mt-1 text-xs text-gray-500">
+          <div
+            v-if="friendStore.friends.length === 0"
+            class="mt-1 text-xs text-gray-500"
+          >
             暂无好友，请先到好友页面添加好友
           </div>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" :disabled="creatingChat" @click="handleSubmit">
+          <el-button
+            type="primary"
+            :disabled="creatingChat"
+            @click="handleSubmit"
+          >
             <template v-if="creatingChat">
-              <span class="i-carbon-circle-dash animate-spin mr-1"></span>
+              <span class="i-carbon-circle-dash mr-1 animate-spin"></span>
               创建中...
             </template>
             <template v-else>创建群聊</template>
@@ -1151,23 +1194,43 @@ watch(
       </el-form>
     </el-dialog>
 
-    <el-drawer v-model="drawer" direction="rtl" :with-header="false" size="320px" @open="handleDrawerOpen" class="chat-drawer">
-      <div class="flex flex-col h-full bg-[#F7F7F7] dark:bg-[#191919]">
+    <el-drawer
+      v-model="drawer"
+      direction="rtl"
+      :with-header="false"
+      size="320px"
+      @open="handleDrawerOpen"
+      class="chat-drawer"
+    >
+      <div class="flex h-full flex-col bg-[#F7F7F7] dark:bg-[#191919]">
         <!-- 群聊信息 -->
-        <div v-if="messageStore.currentMessage?.type === 'group'" class="p-4 border-b border-[#DADADA] dark:border-[#292929] bg-white dark:bg-[#2C2C2C]">
+        <div
+          v-if="messageStore.currentMessage?.type === 'group'"
+          class="border-b border-[#DADADA] bg-white p-4 dark:border-[#292929] dark:bg-[#2C2C2C]"
+        >
           <div class="flex flex-col items-center gap-3">
             <!-- 群头像 -->
-            <div class="relative" :class="{ 'cursor-pointer': isOwner }" @click="isOwner && triggerChatAvatarSelect()">
+            <div
+              class="relative"
+              :class="{ 'cursor-pointer': isOwner }"
+              @click="isOwner && triggerChatAvatarSelect()"
+            >
               <UserAvatar
-                :avatar="messageStore.currentMessage?.displayAvatar || messageStore.currentMessage?.avatar"
-                :name="messageStore.currentMessage?.displayName || messageStore.currentMessage?.title"
+                :avatar="
+                  messageStore.currentMessage?.displayAvatar ||
+                  messageStore.currentMessage?.avatar
+                "
+                :name="
+                  messageStore.currentMessage?.displayName ||
+                  messageStore.currentMessage?.title
+                "
                 :size="72"
               />
               <div
                 v-if="isOwner"
-                class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 hover:opacity-100 transition-opacity"
+                class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity hover:opacity-100"
               >
-                <div class="i-carbon-camera text-white text-xl"></div>
+                <div class="i-carbon-camera text-xl text-white"></div>
               </div>
             </div>
             <input
@@ -1186,7 +1249,7 @@ watch(
                 placeholder="群名称"
                 class="text-center"
               />
-              <div v-else class="text-lg font-medium text-center">
+              <div v-else class="text-center text-lg font-medium">
                 {{ messageStore.currentMessage?.title }}
               </div>
             </div>
@@ -1194,22 +1257,34 @@ watch(
         </div>
 
         <!-- 私聊信息 -->
-        <div v-else class="p-4 border-b border-[#DADADA] dark:border-[#292929] bg-white dark:bg-[#2C2C2C]">
+        <div
+          v-else
+          class="border-b border-[#DADADA] bg-white p-4 dark:border-[#292929] dark:bg-[#2C2C2C]"
+        >
           <div class="flex flex-col items-center gap-3">
             <UserAvatar
               :avatar="messageStore.currentMessage?.displayAvatar"
-              :name="messageStore.currentMessage?.displayName || messageStore.currentMessage?.title"
+              :name="
+                messageStore.currentMessage?.displayName ||
+                messageStore.currentMessage?.title
+              "
               :size="72"
             />
             <div class="text-lg font-medium">
-              {{ messageStore.currentMessage?.displayName || messageStore.currentMessage?.title }}
+              {{
+                messageStore.currentMessage?.displayName ||
+                messageStore.currentMessage?.title
+              }}
             </div>
           </div>
         </div>
 
         <!-- 私聊邀请好友（会转为群聊） -->
-        <div v-if="messageStore.currentMessage?.type === 'private'" class="p-4 border-b border-[#DADADA] dark:border-[#292929]">
-          <el-button class="!w-full !ml-0" @click="handleOpenInviteDialog">
+        <div
+          v-if="messageStore.currentMessage?.type === 'private'"
+          class="border-b border-[#DADADA] p-4 dark:border-[#292929]"
+        >
+          <el-button class="!ml-0 !w-full" @click="handleOpenInviteDialog">
             <template #icon>
               <div class="i-carbon-user-follow"></div>
             </template>
@@ -1218,10 +1293,13 @@ watch(
         </div>
 
         <!-- 群成员列表 -->
-        <div v-if="messageStore.currentMessage?.type === 'group'" class="flex-1 overflow-y-auto">
+        <div
+          v-if="messageStore.currentMessage?.type === 'group'"
+          class="flex-1 overflow-y-auto"
+        >
           <!-- 邀请好友按钮 -->
-          <div class="p-4 border-b border-[#DADADA] dark:border-[#292929]">
-            <el-button class="!w-full !ml-0" @click="handleOpenInviteDialog">
+          <div class="border-b border-[#DADADA] p-4 dark:border-[#292929]">
+            <el-button class="!ml-0 !w-full" @click="handleOpenInviteDialog">
               <template #icon>
                 <div class="i-carbon-user-follow"></div>
               </template>
@@ -1230,27 +1308,40 @@ watch(
           </div>
 
           <!-- 待审核邀请（仅群主可见） -->
-          <div v-if="isOwner && messageStore.currentMessage?.invites?.length" class="p-4 border-b border-[#DADADA] dark:border-[#292929]">
-            <div class="text-sm text-[#666] dark:text-[#999] mb-3 flex items-center gap-2">
+          <div
+            v-if="isOwner && messageStore.currentMessage?.invites?.length"
+            class="border-b border-[#DADADA] p-4 dark:border-[#292929]"
+          >
+            <div
+              class="mb-3 flex items-center gap-2 text-sm text-[#666] dark:text-[#999]"
+            >
               待审核邀请
-              <el-tag type="danger" size="small">{{ messageStore.currentMessage.invites.length }}</el-tag>
+              <el-tag type="danger" size="small">{{
+                messageStore.currentMessage.invites.length
+              }}</el-tag>
             </div>
             <div v-loading="invitesLoading" class="space-y-2">
               <div
                 v-for="invite in messageStore.currentMessage.invites"
                 :key="invite.id"
-                class="p-3 rounded-lg bg-[#EAEAEA] dark:bg-[#252525]"
+                class="rounded-lg bg-[#EAEAEA] p-3 dark:bg-[#252525]"
               >
-                <div class="flex items-center gap-2 mb-2">
+                <div class="mb-2 flex items-center gap-2">
                   <UserAvatar
                     :avatar="invite.inviteeAvatar"
                     :name="invite.inviteeNickname || invite.inviteeUsername"
                     :size="32"
                   />
-                  <div class="flex-1 min-w-0">
-                    <div class="truncate font-medium">{{ invite.inviteeNickname || invite.inviteeUsername }}</div>
+                  <div class="min-w-0 flex-1">
+                    <div class="truncate font-medium">
+                      {{ invite.inviteeNickname || invite.inviteeUsername }}
+                    </div>
                     <div class="text-xs text-[#999] dark:text-[#666]">
-                      由 {{ invite.inviterNickname || invite.inviterUsername }} 邀请
+                      由
+                      {{
+                        invite.inviterNickname || invite.inviterUsername
+                      }}
+                      邀请
                     </div>
                   </div>
                 </div>
@@ -1277,14 +1368,14 @@ watch(
 
           <!-- 群成员 -->
           <div class="p-4">
-            <div class="text-sm text-[#666] dark:text-[#999] mb-3">
+            <div class="mb-3 text-sm text-[#666] dark:text-[#999]">
               群成员 ({{ messageStore.currentMessage?.members?.length || 0 }})
             </div>
             <div v-loading="membersLoading" class="space-y-1">
               <div
                 v-for="member in messageStore.currentMessage?.members"
                 :key="member.userId"
-                class="flex items-center justify-between p-2 rounded-lg hover:bg-[#EAEAEA] dark:hover:bg-[#252525] transition-colors"
+                class="flex items-center justify-between rounded-lg p-2 transition-colors hover:bg-[#EAEAEA] dark:hover:bg-[#252525]"
               >
                 <div class="flex items-center gap-3">
                   <UserAvatar
@@ -1295,10 +1386,22 @@ watch(
                   <div>
                     <div class="flex items-center gap-2">
                       <span>{{ member.nickname || member.username }}</span>
-                      <el-tag v-if="member.role === 'owner'" type="warning" size="small">群主</el-tag>
-                      <el-tag v-else-if="member.role === 'admin'" type="primary" size="small">管理员</el-tag>
+                      <el-tag
+                        v-if="member.role === 'owner'"
+                        type="warning"
+                        size="small"
+                        >群主</el-tag
+                      >
+                      <el-tag
+                        v-else-if="member.role === 'admin'"
+                        type="primary"
+                        size="small"
+                        >管理员</el-tag
+                      >
                     </div>
-                    <div class="text-xs text-[#999] dark:text-[#666]">@{{ member.username }}</div>
+                    <div class="text-xs text-[#999] dark:text-[#666]">
+                      @{{ member.username }}
+                    </div>
                   </div>
                 </div>
                 <!-- 只有群主可以移除成员，且不能移除自己 -->
@@ -1321,8 +1424,16 @@ watch(
         <div v-else class="flex-1"></div>
 
         <!-- 操作按钮 -->
-        <div class="p-4 border-t border-[#DADADA] dark:border-[#292929] bg-white dark:bg-[#2C2C2C] flex flex-col gap-2">
-          <el-button class="!w-full !ml-0" type="warning" plain :loading="clearingChat" @click="handleClear">
+        <div
+          class="flex flex-col gap-2 border-t border-[#DADADA] bg-white p-4 dark:border-[#292929] dark:bg-[#2C2C2C]"
+        >
+          <el-button
+            class="!ml-0 !w-full"
+            type="warning"
+            plain
+            :loading="clearingChat"
+            @click="handleClear"
+          >
             <template #icon>
               <div class="i-carbon-trash-can"></div>
             </template>
@@ -1332,7 +1443,7 @@ watch(
           <!-- 群主可以解散群，其他人只能退出 -->
           <el-button
             v-if="isOwner && messageStore.currentMessage?.type === 'group'"
-            class="!w-full !ml-0"
+            class="!ml-0 !w-full"
             type="danger"
             :loading="exitingChat"
             @click="handleDismissGroup"
@@ -1344,7 +1455,7 @@ watch(
           </el-button>
           <el-button
             v-else
-            class="!w-full !ml-0"
+            class="!ml-0 !w-full"
             type="danger"
             plain
             :loading="exitingChat"
@@ -1353,7 +1464,11 @@ watch(
             <template #icon>
               <div class="i-carbon-logout"></div>
             </template>
-            {{ messageStore.currentMessage?.type === 'group' ? '退出群聊' : '删除会话' }}
+            {{
+              messageStore.currentMessage?.type === 'group'
+                ? '退出群聊'
+                : '删除会话'
+            }}
           </el-button>
         </div>
       </div>
@@ -1361,7 +1476,10 @@ watch(
 
     <!-- 邀请好友对话框 -->
     <el-dialog v-model="inviteDialogVisible" title="邀请好友入群" width="400px">
-      <div v-if="availableFriendsToInvite.length === 0" class="text-center text-[#999] py-4">
+      <div
+        v-if="availableFriendsToInvite.length === 0"
+        class="py-4 text-center text-[#999]"
+      >
         没有可邀请的好友（好友已全部加入群聊或暂无好友）
       </div>
       <el-select
@@ -1412,13 +1530,10 @@ watch(
       <div v-loading="summarizing" element-loading-text="正在生成总结...">
         <div
           v-if="summaryContent"
-          class="prose dark:prose-invert max-w-none p-4 rounded-lg bg-gray-50 dark:bg-[#2C2C2C] min-h-[200px] max-h-[400px] overflow-y-auto"
+          class="prose dark:prose-invert max-h-[400px] min-h-[200px] max-w-none overflow-y-auto rounded-lg bg-gray-50 p-4 dark:bg-[#2C2C2C]"
           v-html="renderedSummary"
         ></div>
-        <div
-          v-else-if="!summarizing"
-          class="text-center text-gray-500 py-8"
-        >
+        <div v-else-if="!summarizing" class="py-8 text-center text-gray-500">
           暂无内容
         </div>
       </div>
