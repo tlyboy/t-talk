@@ -36,7 +36,21 @@ request.interceptors.response.use(
     // 超出 2xx 范围的状态码都会触发该函数。
     // 对响应错误做点什么
 
-    ElMessage.error(error.response.data.message)
+    // 处理 401 认证错误
+    if (error.response?.status === 401) {
+      const userStore = useUserStore()
+      userStore.logout()
+
+      // 避免在登录页重复跳转
+      if (window.location.pathname !== '/login') {
+        ElMessage.error('登录已过期，请重新登录')
+        window.location.href = '/login'
+      }
+
+      return Promise.reject(error)
+    }
+
+    ElMessage.error(error.response?.data?.message || '请求失败')
 
     return Promise.reject(error)
   },

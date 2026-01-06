@@ -34,3 +34,26 @@ export const updateChat = (id: number, data: { title: string }): Promise<any> =>
 export const deleteChat = (id: number): Promise<any> => {
   return request.delete(`/chat/${id}`)
 }
+
+export const updateChatAvatar = (chatId: number, avatar: string): Promise<any> => {
+  return request.put('/chat/avatar', { chatId, avatar })
+}
+
+// 邀请好友入群
+export const inviteToChat = (chatId: number, inviteeIds: number[]): Promise<any> => {
+  return request.post(`/chat/${chatId}/invite`, { inviteeIds })
+}
+
+// 获取待审核邀请列表（群主）
+export const getChatInvites = (chatId: number): Promise<any> => {
+  return request.get(`/chat/${chatId}/invites`)
+}
+
+// 审核邀请（群主）
+export const processChatInvite = (
+  chatId: number,
+  inviteId: number,
+  action: 'accept' | 'reject',
+): Promise<any> => {
+  return request.put(`/chat/${chatId}/invite/${inviteId}`, { action })
+}

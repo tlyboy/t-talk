@@ -85,6 +85,13 @@ export const useFriendStore = defineStore('friend', () => {
     }
   }
 
+  // 批量设置在线好友（WebSocket 认证成功时调用）
+  const setOnlineFriends = (onlineFriendIds: number[]) => {
+    friends.value.forEach((friend) => {
+      friend.isOnline = onlineFriendIds.includes(friend.id)
+    })
+  }
+
   // 添加新好友（WebSocket 收到 accepted 通知时调用）
   const addFriend = (friend: Friend) => {
     if (!friends.value.find((f) => f.id === friend.id)) {
@@ -116,6 +123,7 @@ export const useFriendStore = defineStore('friend', () => {
     removeFriend,
     searchUsers,
     updateOnlineStatus,
+    setOnlineFriends,
     addFriend,
     removeFriendById,
     addRequest,

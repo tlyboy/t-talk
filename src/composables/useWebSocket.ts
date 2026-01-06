@@ -73,6 +73,10 @@ export function useChatWebSocket() {
         isAuthenticated.value = true
         connectionError.value = null
         console.log('[ws] 认证成功, userId:', message.payload?.userId)
+        // 更新在线好友状态
+        if (message.payload?.onlineFriends) {
+          friendStore.setOnlineFriends(message.payload.onlineFriends)
+        }
         break
 
       case 'auth:error':
@@ -140,6 +144,62 @@ export function useChatWebSocket() {
 
       case 'friend:offline':
         friendStore.updateOnlineStatus(message.payload.friendId, false)
+        break
+
+      case 'chat:invite':
+        // 群主收到新的入群邀请
+        const { chatId: inviteChatId, chatTitle, invite } = message.payload || {}
+        if (invite) {
+          // 添加到待审核邀请列表
+          messageStore.addPendingInvite({
+            ...invite,
+            chatTitle,
+          })
+          ElNotification({
+            title: '新的入群申请',
+            message: `${invite.inviterNickname || invite.inviterUsername} 邀请 ${invite.inviteeNickname || invite.inviteeUsername} 加入「${chatTitle}」`,
+            type: 'info',
+          })
+        }
+        break
+
+      case 'chat:invite:result':
+        // 邀请结果通知（邀请人和被邀请人都会收到）
+        const { chatId: resultChatId, chatTitle: resultChatTitle, action, inviterId, inviteeId } = message.payload || {}
+        const isInviter = inviterId === userStore.user.id
+        const isInvitee = inviteeId === userStore.user.id
+
+        if (action === 'accept') {
+          if (isInvitee) {
+            // 被邀请人：刷新聊天列表
+            messageStore.getChatList()
+            ElNotification({
+              title: '入群申请已通过',
+              message: `你已加入群聊「${resultChatTitle}」`,
+              type: 'success',
+            })
+          } else if (isInviter) {
+            ElNotification({
+              title: '邀请已通过',
+              message: `你邀请的好友已加入「${resultChatTitle}」`,
+              type: 'success',
+            })
+          }
+        } else {
+          if (isInvitee) {
+            ElNotification({
+              title: '入群申请被拒绝',
+              message: `你的入群申请「${resultChatTitle}」被群主拒绝`,
+              type: 'warning',
+            })
+          } else if (isInviter) {
+            ElNotification({
+              title: '邀请被拒绝',
+              message: `你邀请的好友加入「${resultChatTitle}」被群主拒绝`,
+              type: 'warning',
+            })
+          }
+        }
         break
 
       case 'error':

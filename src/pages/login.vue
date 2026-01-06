@@ -26,6 +26,10 @@ const onSubmit = async () => {
 
   try {
     await formRef.value?.validate()
+
+    // 登录前清除旧数据，确保干净的登录状态
+    userStore.logout()
+
     await userStore.login(form)
     await messageStore.getChatList()
 

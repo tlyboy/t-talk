@@ -11,3 +11,7 @@ export const login = (data: any): Promise<any> => {
 export const getUserList = (): Promise<any> => {
   return request.get('/user/list')
 }
+
+export const updateNickname = (nickname: string): Promise<any> => {
+  return request.put('/user/nickname', { nickname })
+}

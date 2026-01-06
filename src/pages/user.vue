@@ -13,6 +13,7 @@ const acceptingRequest = ref<number | null>(null)
 const rejectingRequest = ref<number | null>(null)
 const removingFriend = ref<number | null>(null)
 const startingChat = ref<number | null>(null)
+const processingInvite = ref<number | null>(null)
 
 onMounted(async () => {
   pageLoading.value = true
@@ -105,6 +106,18 @@ const handleStartChat = async (friend: any) => {
     startingChat.value = null
   }
 }
+
+const handleProcessInvite = async (invite: any, action: 'accept' | 'reject') => {
+  processingInvite.value = invite.id
+  try {
+    await messageStore.processInvite(invite.chatId, invite.id, action)
+    ElMessage.success(action === 'accept' ? '已同意入群申请' : '已拒绝入群申请')
+  } catch (error: any) {
+    ElMessage.error(error.response?.data?.message || '处理邀请失败')
+  } finally {
+    processingInvite.value = null
+  }
+}
 </script>
 
 <template>
@@ -120,11 +133,11 @@ const handleStartChat = async (friend: any) => {
           >
             <div class="flex items-center gap-3">
               <div class="relative">
-                <div
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-[#3498db] text-white"
-                >
-                  {{ (friend.nickname || friend.username)?.[0]?.toUpperCase() }}
-                </div>
+                <UserAvatar
+                  :avatar="friend.avatar"
+                  :name="friend.nickname || friend.username"
+                  :size="40"
+                />
                 <div
                   v-if="friend.isOnline"
                   class="absolute right-0 bottom-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"
@@ -179,11 +192,12 @@ const handleStartChat = async (friend: any) => {
             class="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-[#2C2C2C]"
           >
             <div class="flex items-center gap-3">
-              <div
-                class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 text-white"
-              >
-                {{ (request.nickname || request.username)?.[0]?.toUpperCase() }}
-              </div>
+              <UserAvatar
+                :avatar="request.avatar"
+                :name="request.nickname || request.username"
+                :size="40"
+                bg-color="#9ca3af"
+              />
               <div>
                 <div>{{ request.nickname || request.username }}</div>
                 <div class="text-xs text-gray-500">请求添加你为好友</div>
@@ -211,6 +225,60 @@ const handleStartChat = async (friend: any) => {
         </div>
       </el-tab-pane>
 
+      <!-- 入群邀请 -->
+      <el-tab-pane name="invites">
+        <template #label>
+          <span>
+            入群邀请
+            <el-badge
+              v-if="messageStore.pendingInvites.length > 0"
+              :value="messageStore.pendingInvites.length"
+              class="ml-1"
+            />
+          </span>
+        </template>
+        <div class="space-y-2">
+          <div
+            v-for="invite in messageStore.pendingInvites"
+            :key="invite.id"
+            class="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-[#2C2C2C]"
+          >
+            <div class="flex items-center gap-3">
+              <UserAvatar
+                :avatar="invite.inviteeAvatar"
+                :name="invite.inviteeNickname || invite.inviteeUsername"
+                :size="40"
+                bg-color="#9ca3af"
+              />
+              <div>
+                <div>{{ invite.inviteeNickname || invite.inviteeUsername }}</div>
+                <div class="text-xs text-gray-500">
+                  由 {{ invite.inviterNickname || invite.inviterUsername }} 邀请加入「{{ invite.chatTitle }}」
+                </div>
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <el-button
+                type="primary"
+                size="small"
+                :loading="processingInvite === invite.id"
+                @click="handleProcessInvite(invite, 'accept')"
+              >
+                同意
+              </el-button>
+              <el-button
+                size="small"
+                :loading="processingInvite === invite.id"
+                @click="handleProcessInvite(invite, 'reject')"
+              >
+                拒绝
+              </el-button>
+            </div>
+          </div>
+          <el-empty v-if="messageStore.pendingInvites.length === 0" description="暂无入群邀请" />
+        </div>
+      </el-tab-pane>
+
       <!-- 添加好友 -->
       <el-tab-pane label="添加好友" name="search">
         <div class="space-y-4">
@@ -232,11 +300,12 @@ const handleStartChat = async (friend: any) => {
               class="flex items-center justify-between rounded-lg bg-white p-3 dark:bg-[#2C2C2C]"
             >
               <div class="flex items-center gap-3">
-                <div
-                  class="flex h-10 w-10 items-center justify-center rounded-full bg-gray-400 text-white"
-                >
-                  {{ (user.nickname || user.username)?.[0]?.toUpperCase() }}
-                </div>
+                <UserAvatar
+                  :avatar="user.avatar"
+                  :name="user.nickname || user.username"
+                  :size="40"
+                  bg-color="#9ca3af"
+                />
                 <div>{{ user.nickname || user.username }}</div>
               </div>
               <div>

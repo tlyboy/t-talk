@@ -286,6 +286,7 @@ declare global {
   const useToString: typeof import('@vueuse/core')['useToString']
   const useToggle: typeof import('@vueuse/core')['useToggle']
   const useTransition: typeof import('@vueuse/core')['useTransition']
+  const useUpload: typeof import('./composables/useUpload')['useUpload']
   const useUrlSearchParams: typeof import('@vueuse/core')['useUrlSearchParams']
   const useUserMedia: typeof import('@vueuse/core')['useUserMedia']
   const useUserStore: typeof import('./stores/user')['useUserStore']
@@ -327,7 +328,7 @@ declare global {
   export type { Friend, FriendRequest } from './stores/friend'
   import('./stores/friend')
   // @ts-ignore
-  export type { Message, Chat } from './stores/message'
+  export type { Message, ChatMember, ChatInvite, Chat, PendingInvite } from './stores/message'
   import('./stores/message')
 }
 
@@ -613,6 +614,7 @@ declare module 'vue' {
     readonly useToString: UnwrapRef<typeof import('@vueuse/core')['useToString']>
     readonly useToggle: UnwrapRef<typeof import('@vueuse/core')['useToggle']>
     readonly useTransition: UnwrapRef<typeof import('@vueuse/core')['useTransition']>
+    readonly useUpload: UnwrapRef<typeof import('./composables/useUpload')['useUpload']>
     readonly useUrlSearchParams: UnwrapRef<typeof import('@vueuse/core')['useUrlSearchParams']>
     readonly useUserMedia: UnwrapRef<typeof import('@vueuse/core')['useUserMedia']>
     readonly useUserStore: UnwrapRef<typeof import('./stores/user')['useUserStore']>
