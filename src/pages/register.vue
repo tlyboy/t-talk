@@ -55,7 +55,7 @@ const onSubmit = async () => {
 
 <template>
   <div
-    class="flex h-full items-center justify-center bg-gradient-to-br from-[#3498db]/10 to-[#3498db]/5 px-4"
+    class="flex h-full items-center justify-center bg-gradient-to-br from-[#3498db]/10 to-[#3498db]/5 px-4 safe-area-bottom"
   >
     <div class="w-full max-w-xs">
       <div class="rounded-xl bg-white p-5 shadow-lg dark:bg-[#2C2C2C]">
