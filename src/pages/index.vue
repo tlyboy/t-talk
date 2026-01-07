@@ -38,8 +38,8 @@ const selectedMessages = ref<number[]>([])
 const summaryDialogVisible = ref(false)
 const summaryContent = ref('')
 const summarizing = ref(false)
-let longPressTimer: ReturnType<typeof setTimeout> | null = null
-let justEnteredSelectMode = false
+// 当前右键的消息
+const contextMessage = ref<any>(null)
 
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
@@ -330,31 +330,29 @@ const handlePolish = async () => {
   }
 }
 
-// 长按开始选择消息
-const handleLongPressStart = (messageId: number) => {
-  longPressTimer = setTimeout(() => {
-    selectMode.value = true
-    selectedMessages.value = [messageId]
-    justEnteredSelectMode = true
-  }, 500)
-}
-
-// 长按结束
-const handleLongPressEnd = () => {
-  if (longPressTimer) {
-    clearTimeout(longPressTimer)
-    longPressTimer = null
-  }
-}
-
 // 点击消息处理（选择模式下）
 const handleMessageClick = (messageId: number) => {
   if (!selectMode.value) return
-  if (justEnteredSelectMode) {
-    justEnteredSelectMode = false
-    return
-  }
   toggleMessageSelect(messageId)
+}
+
+// 右键菜单命令处理
+const handleContextCommand = (command: string) => {
+  if (!contextMessage.value) return
+
+  switch (command) {
+    case 'multiSelect':
+      selectMode.value = true
+      selectedMessages.value = [contextMessage.value.id]
+      break
+    case 'copy':
+      // 复制纯文本内容
+      const tempDiv = document.createElement('div')
+      tempDiv.innerHTML = contextMessage.value.content
+      navigator.clipboard.writeText(tempDiv.textContent || '')
+      ElMessage.success('已复制')
+      break
+  }
 }
 
 // 切换消息选择
@@ -1000,11 +998,6 @@ watch(
             class="flex items-start gap-2"
             v-for="(result, index) in results"
             :key="index"
-            @mousedown="!selectMode && handleLongPressStart(result.id)"
-            @mouseup="handleLongPressEnd"
-            @mouseleave="handleLongPressEnd"
-            @touchstart="!selectMode && handleLongPressStart(result.id)"
-            @touchend="handleLongPressEnd"
             @click="handleMessageClick(result.id)"
           >
             <!-- 选择模式下显示复选框（始终在左边） -->
@@ -1033,10 +1026,28 @@ watch(
                   result.userId === userStore.user.id ? 'white' : '#333'
                 "
               />
-              <div
-                class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
-                v-html="result.content"
-              ></div>
+              <el-dropdown
+                trigger="contextmenu"
+                @command="handleContextCommand"
+                @visible-change="(visible: boolean) => visible && (contextMessage = result)"
+              >
+                <div
+                  class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
+                  v-html="result.content"
+                ></div>
+                <template #dropdown>
+                  <el-dropdown-menu>
+                    <el-dropdown-item command="multiSelect">
+                      <div class="i-carbon-checkbox-checked mr-2 inline-block"></div>
+                      多选
+                    </el-dropdown-item>
+                    <el-dropdown-item command="copy">
+                      <div class="i-carbon-copy mr-2 inline-block"></div>
+                      复制
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </template>
+              </el-dropdown>
             </div>
           </div>
         </div>
