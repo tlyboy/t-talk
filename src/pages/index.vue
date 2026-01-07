@@ -1100,7 +1100,7 @@ watch(
                 "
               >
                 <div
-                  class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white p-4 dark:bg-[#2C2C2C]"
+                  class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
                   v-html="result.content"
                 ></div>
                 <template #dropdown>
@@ -1628,7 +1628,7 @@ watch(
       <div v-loading="summarizing" element-loading-text="正在生成总结...">
         <div
           v-if="summaryContent"
-          class="prose dark:prose-invert max-h-[400px] min-h-[200px] max-w-none overflow-y-auto rounded-lg bg-gray-50 p-4 dark:bg-[#2C2C2C]"
+          class="prose dark:prose-invert max-h-[400px] min-h-[200px] max-w-none overflow-y-auto rounded-lg bg-gray-50 px-4 py-2 dark:bg-[#2C2C2C]"
           v-html="renderedSummary"
         ></div>
         <div v-else-if="!summarizing" class="py-8 text-center text-gray-500">
