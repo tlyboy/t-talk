@@ -1074,13 +1074,14 @@ watch(
             />
             <!-- 消息内容区域 -->
             <div
-              class="flex flex-1 gap-4 overflow-hidden"
+              class="flex max-w-full gap-3 md:max-w-[85%]"
               :class="{
-                'flex-row-reverse': result.userId === userStore.user.id,
-                'flex-row': result.userId !== userStore.user.id,
+                'ml-auto flex-row-reverse': result.userId === userStore.user.id,
+                'mr-auto flex-row': result.userId !== userStore.user.id,
               }"
             >
               <UserAvatar
+                class="shrink-0"
                 :avatar="result.avatar"
                 :name="result.nickname"
                 :bg-color="
@@ -1092,13 +1093,14 @@ watch(
               />
               <el-dropdown
                 trigger="contextmenu"
+                class="min-w-0"
                 @command="handleContextCommand"
                 @visible-change="
                   (visible: boolean) => visible && (contextMessage = result)
                 "
               >
                 <div
-                  class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
+                  class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white p-4 dark:bg-[#2C2C2C]"
                   v-html="result.content"
                 ></div>
                 <template #dropdown>
@@ -1374,7 +1376,7 @@ watch(
           v-if="messageStore.currentMessage?.type === 'private'"
           class="border-b border-[#DADADA] p-4 dark:border-[#292929]"
         >
-          <el-button class="!ml-0 !w-full" @click="handleOpenInviteDialog">
+          <el-button class="ml-0! w-full!" @click="handleOpenInviteDialog">
             <template #icon>
               <div class="i-carbon-user-follow"></div>
             </template>
@@ -1389,7 +1391,7 @@ watch(
         >
           <!-- 邀请好友按钮 -->
           <div class="border-b border-[#DADADA] p-4 dark:border-[#292929]">
-            <el-button class="!ml-0 !w-full" @click="handleOpenInviteDialog">
+            <el-button class="ml-0! w-full!" @click="handleOpenInviteDialog">
               <template #icon>
                 <div class="i-carbon-user-follow"></div>
               </template>
@@ -1516,7 +1518,7 @@ watch(
           class="flex flex-col gap-2 border-t border-[#DADADA] bg-white p-4 dark:border-[#292929] dark:bg-[#2C2C2C]"
         >
           <el-button
-            class="!ml-0 !w-full"
+            class="ml-0! w-full!"
             type="warning"
             plain
             :loading="clearingChat"
@@ -1531,7 +1533,7 @@ watch(
           <!-- 群主可以解散群，其他人只能退出 -->
           <el-button
             v-if="isOwner && messageStore.currentMessage?.type === 'group'"
-            class="!ml-0 !w-full"
+            class="ml-0! w-full!"
             type="danger"
             :loading="exitingChat"
             @click="handleDismissGroup"
@@ -1543,7 +1545,7 @@ watch(
           </el-button>
           <el-button
             v-else
-            class="!ml-0 !w-full"
+            class="ml-0! w-full!"
             type="danger"
             plain
             :loading="exitingChat"

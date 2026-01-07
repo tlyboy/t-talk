@@ -32,6 +32,19 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
 }
 
+/* 消息气泡内图片限制 */
+.prose img {
+  max-width: 100%;
+  max-height: 300px;
+  object-fit: contain;
+  border-radius: 0.5rem;
+}
+
+/* 代码块可横向滚动 */
+.prose pre {
+  overflow-x: auto;
+}
+
 
 /* 禁用 Apple 设备输入框首字母自动大写和 CSS 大写转换 */
 /* iOS 防止输入框自动缩放（字体需 >= 16px） */
