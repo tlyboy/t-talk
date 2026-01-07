@@ -27,8 +27,8 @@ const avatarUrl = computed(() => {
     return props.avatar
   }
   // 否则拼接服务器地址
-  const baseUrl = settingsStore.settings.url.replace('/v1', '')
-  return `${baseUrl}${props.avatar}`
+  const { server, devMode } = settingsStore.settings
+  return `${devMode ? 'http' : 'https'}://${server}${props.avatar}`
 })
 
 // 获取首字母

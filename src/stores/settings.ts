@@ -4,8 +4,8 @@ export const useSettingsStore = defineStore(
   'settings',
   () => {
     const settings = ref({
-      url: import.meta.env.VITE_API_URL || 'http://localhost:3000/v1',
-      wsUrl: import.meta.env.VITE_WS_URL || 'ws://localhost:3000/_ws',
+      server: import.meta.env.VITE_SERVER || 'localhost:3000',
+      devMode: import.meta.env.DEV,
       baseUrl: 'http://localhost:11434/v1',
       apiKey: 'ollama',
       model: 'qwen3-vl',

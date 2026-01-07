@@ -20,7 +20,10 @@ export function useChatWebSocket() {
   const connectionError = ref<string | null>(null)
 
   const { status, data, send, open, close } = useWebSocket(
-    () => settingsStore.settings.wsUrl,
+    () => {
+      const { server, devMode } = settingsStore.settings
+      return `${devMode ? 'ws' : 'wss'}://${server}/_ws`
+    },
     {
       autoReconnect: {
         retries: 3,

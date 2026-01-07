@@ -9,7 +9,8 @@ request.interceptors.request.use(
 
     const settingsStore = useSettingsStore()
 
-    config.baseURL = settingsStore.settings.url
+    const { server, devMode } = settingsStore.settings
+    config.baseURL = `${devMode ? 'http' : 'https'}://${server}/v1`
 
     const userStore = useUserStore()
 

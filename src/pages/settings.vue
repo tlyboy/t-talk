@@ -8,8 +8,6 @@ const form = reactive({
 })
 
 const rules = {
-  url: [{ required: true, message: '请输入API地址', trigger: 'blur' }],
-  wsUrl: [{ required: true, message: '请输入WebSocket地址', trigger: 'blur' }],
   baseUrl: [{ required: true, message: '请输入模型地址', trigger: 'blur' }],
   apiKey: [{ required: true, message: '请输入API Key', trigger: 'blur' }],
   model: [{ required: true, message: '请输入模型名称', trigger: 'blur' }],
@@ -84,18 +82,12 @@ const handleClearCache = async () => {
           <div class="i-carbon-cloud text-lg"></div>
           服务器配置
         </h3>
-        <el-form
-          ref="formRef"
-          :model="form"
-          label-width="auto"
-          label-position="top"
-          :rules="rules"
-        >
-          <el-form-item label="API 地址" prop="url">
-            <el-input v-model="form.url" placeholder="请输入API地址" />
+        <el-form :model="form" label-width="auto" label-position="top">
+          <el-form-item label="服务器">
+            <el-input v-model="form.server" placeholder="example.com" />
           </el-form-item>
-          <el-form-item label="WebSocket 地址" prop="wsUrl">
-            <el-input v-model="form.wsUrl" placeholder="请输入WebSocket地址" />
+          <el-form-item label="调试模式">
+            <el-switch v-model="form.devMode" />
           </el-form-item>
         </el-form>
       </div>
@@ -107,6 +99,7 @@ const handleClearCache = async () => {
           AI 配置
         </h3>
         <el-form
+          ref="formRef"
           :model="form"
           label-width="auto"
           label-position="top"

@@ -3,17 +3,6 @@ const userStore = useUserStore()
 const router = useRouter()
 const settingsStore = useSettingsStore()
 
-// 从设置中提取域名
-const extractDomain = (url: string) => {
-  try {
-    return url.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
-  } catch {
-    return ''
-  }
-}
-
-const serverDomain = ref(extractDomain(settingsStore.settings.url))
-
 const form = reactive({
   nickname: '',
   username: '',
@@ -32,22 +21,11 @@ const rules = {
 
 const formRef = useTemplateRef('formRef')
 
-// 同步服务器地址到设置
-const syncServerSettings = () => {
-  if (serverDomain.value) {
-    const domain = serverDomain.value.replace(/^https?:\/\//, '').replace(/\/+$/, '')
-    settingsStore.settings.url = `https://${domain}`
-    settingsStore.settings.wsUrl = `wss://${domain}`
-  }
-}
-
 const onSubmit = async () => {
-  if (!serverDomain.value.trim()) {
+  if (!settingsStore.settings.server.trim()) {
     ElMessage.error('请输入服务器地址')
     return
   }
-
-  syncServerSettings()
 
   try {
     await formRef.value?.validate()
@@ -83,7 +61,7 @@ const onSubmit = async () => {
           hide-required-asterisk
         >
           <el-form-item label="服务器" class="mb-2">
-            <el-input v-model="serverDomain" placeholder="example.com" />
+            <el-input v-model="settingsStore.settings.server" placeholder="example.com" />
           </el-form-item>
           <el-form-item label="昵称" prop="nickname" class="mb-2">
             <el-input v-model="form.nickname" placeholder="请输入昵称" />
