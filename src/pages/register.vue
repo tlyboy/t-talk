@@ -3,6 +3,8 @@ const userStore = useUserStore()
 const router = useRouter()
 const settingsStore = useSettingsStore()
 
+const server = ref(settingsStore.settings.server)
+
 const form = reactive({
   nickname: '',
   username: '',
@@ -22,10 +24,13 @@ const rules = {
 const formRef = useTemplateRef('formRef')
 
 const onSubmit = async () => {
-  if (!settingsStore.settings.server.trim()) {
+  if (!server.value.trim()) {
     ElMessage.error('请输入服务器地址')
     return
   }
+
+  // 提交时才同步到 store
+  settingsStore.settings.server = server.value.trim()
 
   try {
     await formRef.value?.validate()
@@ -49,10 +54,14 @@ const onSubmit = async () => {
 </script>
 
 <template>
-  <div class="flex h-full items-center justify-center bg-gradient-to-br from-[#3498db]/10 to-[#3498db]/5 px-4">
+  <div
+    class="flex h-full items-center justify-center bg-gradient-to-br from-[#3498db]/10 to-[#3498db]/5 px-4"
+  >
     <div class="w-full max-w-xs">
       <div class="rounded-xl bg-white p-5 shadow-lg dark:bg-[#2C2C2C]">
-        <h2 class="mb-3 text-center text-lg font-semibold text-[#3498db]">创建账号</h2>
+        <h2 class="mb-3 text-center text-lg font-semibold text-[#3498db]">
+          创建账号
+        </h2>
         <el-form
           ref="formRef"
           :model="form"
@@ -61,7 +70,7 @@ const onSubmit = async () => {
           hide-required-asterisk
         >
           <el-form-item label="服务器" class="mb-2">
-            <el-input v-model="settingsStore.settings.server" placeholder="example.com" />
+            <el-input v-model="server" placeholder="example.com" />
           </el-form-item>
           <el-form-item label="昵称" prop="nickname" class="mb-2">
             <el-input v-model="form.nickname" placeholder="请输入昵称" />
@@ -70,7 +79,12 @@ const onSubmit = async () => {
             <el-input v-model="form.username" placeholder="请输入用户名" />
           </el-form-item>
           <el-form-item label="密码" prop="password" class="mb-2">
-            <el-input v-model="form.password" type="password" placeholder="请输入密码" show-password />
+            <el-input
+              v-model="form.password"
+              type="password"
+              placeholder="请输入密码"
+              show-password
+            />
           </el-form-item>
           <el-form-item label="确认密码" prop="confirmPassword" class="mb-2">
             <el-input
@@ -82,7 +96,9 @@ const onSubmit = async () => {
             />
           </el-form-item>
           <el-form-item label=" " class="mb-0">
-            <el-button type="primary" class="w-full" @click="onSubmit">注册</el-button>
+            <el-button type="primary" class="w-full" @click="onSubmit"
+              >注册</el-button
+            >
           </el-form-item>
         </el-form>
 

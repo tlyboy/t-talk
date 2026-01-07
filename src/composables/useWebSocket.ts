@@ -19,41 +19,43 @@ export function useChatWebSocket() {
   const isAuthenticated = ref(false)
   const connectionError = ref<string | null>(null)
 
-  const { status, data, send, open, close } = useWebSocket(
-    () => {
-      const { server, devMode } = settingsStore.settings
-      return `${devMode ? 'ws' : 'wss'}://${server}/_ws`
-    },
-    {
-      autoReconnect: {
-        retries: 3,
-        delay: 1000,
-        onFailed() {
-          connectionError.value = 'WebSocket 连接失败，请检查网络'
-          ElMessage.error('WebSocket 连接失败')
-        },
-      },
-      heartbeat: {
-        message: JSON.stringify({ type: 'ping' }),
-        interval: 30000,
-        pongTimeout: 5000,
-      },
-      immediate: false,
-      onConnected() {
-        console.log('[ws] 已连接，发送认证')
-        // 连接成功后立即发送认证
-        sendAuth()
-      },
-      onDisconnected() {
-        console.log('[ws] 连接断开')
-        isAuthenticated.value = false
-      },
-      onError(_, event) {
-        console.error('[ws] 连接错误:', event)
-        connectionError.value = '连接出错'
+  // 使用 ref 存储 URL，避免响应式触发自动连接
+  const wsUrl = ref('')
+
+  const getWsUrl = () => {
+    const { server, devMode } = settingsStore.settings
+    return `${devMode ? 'ws' : 'wss'}://${server}/_ws`
+  }
+
+  const { status, data, send, open, close } = useWebSocket(wsUrl, {
+    autoReconnect: {
+      retries: 3,
+      delay: 1000,
+      onFailed() {
+        connectionError.value = 'WebSocket 连接失败，请检查网络'
+        ElMessage.error('WebSocket 连接失败')
       },
     },
-  )
+    heartbeat: {
+      message: JSON.stringify({ type: 'ping' }),
+      interval: 30000,
+      pongTimeout: 5000,
+    },
+    immediate: false,
+    onConnected() {
+      console.log('[ws] 已连接，发送认证')
+      // 连接成功后立即发送认证
+      sendAuth()
+    },
+    onDisconnected() {
+      console.log('[ws] 连接断开')
+      isAuthenticated.value = false
+    },
+    onError(_, event) {
+      console.error('[ws] 连接错误:', event)
+      connectionError.value = '连接出错'
+    },
+  })
 
   // 监听收到的消息
   watch(data, (raw) => {
@@ -263,7 +265,9 @@ export function useChatWebSocket() {
       return
     }
 
-    console.log('[ws] 开始连接...')
+    // 连接前更新 URL
+    wsUrl.value = getWsUrl()
+    console.log('[ws] 开始连接...', wsUrl.value)
     open()
   }
 

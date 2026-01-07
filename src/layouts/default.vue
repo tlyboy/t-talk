@@ -7,7 +7,7 @@ const uiStore = useUiStore()
   <div class="flex h-full">
     <!-- 桌面端：左侧导航栏 -->
     <div
-      class="hidden md:flex flex-col justify-between border-r border-[#DADADA] bg-[#EDEDED] px-2 py-4 dark:border-[#292929] dark:bg-[#121212]"
+      class="hidden flex-col justify-between border-r border-[#DADADA] bg-[#EDEDED] px-2 py-4 md:flex dark:border-[#292929] dark:bg-[#121212]"
     >
       <!-- 顶部：用户头像/Logo -->
       <div class="flex flex-col items-center gap-4 text-xl">
@@ -78,7 +78,7 @@ const uiStore = useUiStore()
     <!-- 移动端：底部导航栏（聊天视图时隐藏） -->
     <div
       v-show="!uiStore.isMobileChatView"
-      class="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-[#DADADA] bg-[#EDEDED] dark:border-[#292929] dark:bg-[#121212] safe-area-bottom"
+      class="safe-area-bottom fixed right-0 bottom-0 left-0 z-50 flex border-t border-[#DADADA] bg-[#EDEDED] md:hidden dark:border-[#292929] dark:bg-[#121212]"
     >
       <RouterLink
         to="/"
@@ -110,7 +110,9 @@ const uiStore = useUiStore()
       <RouterLink
         to="/settings"
         class="flex flex-1 flex-col items-center gap-1 py-2"
-        :class="$route.path === '/settings' ? 'text-[#3498db]' : 'text-gray-500'"
+        :class="
+          $route.path === '/settings' ? 'text-[#3498db]' : 'text-gray-500'
+        "
       >
         <div class="i-carbon-settings text-xl"></div>
         <span class="text-xs">设置</span>

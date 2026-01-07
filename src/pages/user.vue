@@ -268,9 +268,7 @@ const handleProcessInvite = async (
                 </div>
                 <div class="text-xs text-gray-500">
                   由
-                  {{
-                    invite.inviterNickname || invite.inviterUsername
-                  }}
+                  {{ invite.inviterNickname || invite.inviterUsername }}
                   邀请加入「{{ invite.chatTitle }}」
                 </div>
               </div>

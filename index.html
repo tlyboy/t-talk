@@ -2,14 +2,25 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>T-Talk</title>
     <meta name="description" content="T-Talk 即时通讯应用" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="mask-icon" href="/mask-icon.svg" color="#3498db" />
-    <meta name="theme-color" content="#ededed" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#191919" media="(prefers-color-scheme: dark)" />
+    <meta
+      name="theme-color"
+      content="#ededed"
+      media="(prefers-color-scheme: light)"
+    />
+    <meta
+      name="theme-color"
+      content="#191919"
+      media="(prefers-color-scheme: dark)"
+    />
     <link href="/src/styles.css" rel="stylesheet" />
   </head>
   <body>
@@ -20,11 +31,14 @@
           window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: dark)').matches
         const setting = localStorage.getItem('vueuse-color-scheme') || 'auto'
-        const isDark = setting === 'dark' || (prefersDark && setting !== 'light')
+        const isDark =
+          setting === 'dark' || (prefersDark && setting !== 'light')
         if (isDark) document.documentElement.classList.toggle('dark', true)
         // 更新 theme-color
         const themeColor = isDark ? '#191919' : '#ededed'
-        document.querySelector('meta[name="theme-color"]:not([media])')?.setAttribute('content', themeColor)
+        document
+          .querySelector('meta[name="theme-color"]:not([media])')
+          ?.setAttribute('content', themeColor)
       })()
     </script>
     <script type="module" src="/src/main.ts"></script>

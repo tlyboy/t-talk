@@ -942,8 +942,8 @@ watch(
     <div class="flex h-14">
       <!-- 搜索栏：移动端列表视图显示，桌面端始终显示 -->
       <div
-        class="flex w-full md:w-52 items-center gap-2 border-b md:border-r border-[#DADADA] bg-[#F7F7F7] px-3 dark:border-[#292929] dark:bg-[#191919]"
-        :class="{ 'hidden': isMobile && mobileView === 'chat' }"
+        class="flex w-full items-center gap-2 border-b border-[#DADADA] bg-[#F7F7F7] px-3 md:w-52 md:border-r dark:border-[#292929] dark:bg-[#191919]"
+        :class="{ hidden: isMobile && mobileView === 'chat' }"
       >
         <el-input
           size="small"
@@ -967,7 +967,7 @@ watch(
       <!-- 聊天标题栏：移动端聊天视图显示，桌面端始终显示 -->
       <div
         class="flex flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
-        :class="{ 'hidden': isMobile && mobileView === 'list' }"
+        :class="{ hidden: isMobile && mobileView === 'list' }"
       >
         <div class="flex items-center gap-3">
           <!-- 移动端返回按钮 -->
@@ -998,8 +998,8 @@ watch(
     <div class="flex flex-1 overflow-hidden">
       <!-- 聊天列表：移动端全宽，桌面端固定宽度 -->
       <div
-        class="w-full md:w-52 overflow-y-auto border-r border-[#DADADA] dark:border-[#292929]"
-        :class="{ 'hidden': isMobile && mobileView === 'chat' }"
+        class="w-full overflow-y-auto border-r border-[#DADADA] md:w-52 dark:border-[#292929]"
+        :class="{ hidden: isMobile && mobileView === 'chat' }"
         v-loading="chatListLoading"
       >
         <div
@@ -1035,8 +1035,8 @@ watch(
       <div
         class="flex-1 flex-col overflow-hidden"
         :class="{
-          'hidden': isMobile && mobileView === 'list',
-          'flex': !isMobile || mobileView === 'chat'
+          hidden: isMobile && mobileView === 'list',
+          flex: !isMobile || mobileView === 'chat',
         }"
       >
         <!-- 选择模式工具栏 -->
@@ -1093,7 +1093,9 @@ watch(
               <el-dropdown
                 trigger="contextmenu"
                 @command="handleContextCommand"
-                @visible-change="(visible: boolean) => visible && (contextMessage = result)"
+                @visible-change="
+                  (visible: boolean) => visible && (contextMessage = result)
+                "
               >
                 <div
                   class="prose dark:prose-invert max-w-none overflow-hidden rounded-lg bg-white px-4 py-2 dark:bg-[#2C2C2C]"
@@ -1102,7 +1104,9 @@ watch(
                 <template #dropdown>
                   <el-dropdown-menu>
                     <el-dropdown-item command="multiSelect">
-                      <div class="i-carbon-checkbox-checked mr-2 inline-block"></div>
+                      <div
+                        class="i-carbon-checkbox-checked mr-2 inline-block"
+                      ></div>
                       多选
                     </el-dropdown-item>
                     <el-dropdown-item command="copy">
@@ -1141,7 +1145,7 @@ watch(
           class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
           :class="{
             'ring-2 ring-blue-400 ring-inset': isDragOver,
-            'safe-area-bottom': isMobile && mobileView === 'chat'
+            'safe-area-bottom': isMobile && mobileView === 'chat',
           }"
           @dragover="handleDragOver"
           @dragleave="handleDragLeave"
@@ -1424,9 +1428,7 @@ watch(
                     </div>
                     <div class="text-xs text-[#999] dark:text-[#666]">
                       由
-                      {{
-                        invite.inviterNickname || invite.inviterUsername
-                      }}
+                      {{ invite.inviterNickname || invite.inviterUsername }}
                       邀请
                     </div>
                   </div>
