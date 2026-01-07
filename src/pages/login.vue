@@ -2,6 +2,18 @@
 const userStore = useUserStore()
 const messageStore = useMessageStore()
 const router = useRouter()
+const settingsStore = useSettingsStore()
+
+// 从设置中提取域名
+const extractDomain = (url: string) => {
+  try {
+    return url.replace(/^https?:\/\//, '').replace(/\/.*$/, '')
+  } catch {
+    return ''
+  }
+}
+
+const serverDomain = ref(extractDomain(settingsStore.settings.url))
 
 const form = reactive({
   username: '',
@@ -15,24 +27,28 @@ const rules = {
 
 const formRef = useTemplateRef('formRef')
 
-const settingsStore = useSettingsStore()
+// 同步服务器地址到设置
+const syncServerSettings = () => {
+  if (serverDomain.value) {
+    const domain = serverDomain.value.replace(/^https?:\/\//, '').replace(/\/+$/, '')
+    settingsStore.settings.url = `https://${domain}`
+    settingsStore.settings.wsUrl = `wss://${domain}`
+  }
+}
 
 const onSubmit = async () => {
-  if (settingsStore.settings.url === '') {
-    ElMessage.error('请先配置API地址')
-    router.push('/settings')
+  if (!serverDomain.value.trim()) {
+    ElMessage.error('请输入服务器地址')
     return
   }
 
+  syncServerSettings()
+
   try {
     await formRef.value?.validate()
-
-    // 登录前清除旧数据，确保干净的登录状态
     userStore.logout()
-
     await userStore.login(form)
     await messageStore.getChatList()
-
     router.replace('/')
   } catch (error) {
     console.log(error)
@@ -42,49 +58,37 @@ const onSubmit = async () => {
 
 <template>
   <div class="flex h-full items-center justify-center bg-gradient-to-br from-[#3498db]/10 to-[#3498db]/5 px-4">
-    <div class="w-full max-w-sm">
-      <!-- Logo -->
-      <div class="mb-8 flex flex-col items-center">
-        <img src="@/assets/images/logo.png" alt="T-Talk" class="mb-4 h-20 w-20" />
-        <h1 class="text-2xl font-bold text-[#3498db]">T-Talk</h1>
-        <p class="text-sm text-gray-500">即时通讯应用</p>
-      </div>
-
-      <!-- 表单 -->
-      <div class="rounded-xl bg-white p-6 shadow-lg dark:bg-[#2C2C2C]">
+    <div class="w-full max-w-xs">
+      <div class="rounded-xl bg-white p-5 shadow-lg dark:bg-[#2C2C2C]">
+        <h2 class="mb-3 text-center text-lg font-semibold text-[#3498db]">登录 T-Talk</h2>
         <el-form
           ref="formRef"
           :model="form"
           :rules="rules"
-          label-position="top"
+          label-width="60px"
           hide-required-asterisk
         >
-          <el-form-item label="用户名" prop="username">
-            <el-input
-              v-model="form.username"
-              placeholder="请输入用户名"
-              size="large"
-              :prefix-icon="() => h('div', { class: 'i-carbon-user' })"
-            />
+          <el-form-item label="服务器" class="mb-2">
+            <el-input v-model="serverDomain" placeholder="example.com" />
           </el-form-item>
-          <el-form-item label="密码" prop="password">
+          <el-form-item label="用户名" prop="username" class="mb-2">
+            <el-input v-model="form.username" placeholder="请输入用户名" />
+          </el-form-item>
+          <el-form-item label="密码" prop="password" class="mb-2">
             <el-input
               v-model="form.password"
               type="password"
               placeholder="请输入密码"
-              size="large"
               show-password
-              :prefix-icon="() => h('div', { class: 'i-carbon-password' })"
               @keyup.enter="onSubmit"
             />
           </el-form-item>
-          <el-form-item class="mb-0">
-            <el-button type="primary" size="large" class="w-full" @click="onSubmit">
-              登录
-            </el-button>
+          <el-form-item label=" " class="mb-0">
+            <el-button type="primary" class="w-full" @click="onSubmit">登录</el-button>
           </el-form-item>
         </el-form>
-        <div class="mt-4 text-center text-sm text-gray-500">
+
+        <div class="mt-3 text-center text-sm text-gray-500">
           还没有账号？
           <span
             class="cursor-pointer text-[#3498db] hover:underline"

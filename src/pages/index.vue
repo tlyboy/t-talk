@@ -1120,6 +1120,7 @@ watch(
         <div
           v-if="selectMode"
           class="flex items-center justify-center border-t border-[#DADADA] p-4 dark:border-[#292929]"
+          :class="{ 'safe-area-bottom': isMobile && mobileView === 'chat' }"
         >
           <el-button
             type="primary"
@@ -1138,7 +1139,10 @@ watch(
         <div
           v-else
           class="flex flex-col gap-2 border-t border-[#DADADA] p-4 dark:border-[#292929]"
-          :class="{ 'ring-2 ring-blue-400 ring-inset': isDragOver }"
+          :class="{
+            'ring-2 ring-blue-400 ring-inset': isDragOver,
+            'safe-area-bottom': isMobile && mobileView === 'chat'
+          }"
           @dragover="handleDragOver"
           @dragleave="handleDragLeave"
           @drop="handleDrop"
