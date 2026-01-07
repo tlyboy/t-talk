@@ -48,7 +48,7 @@ const handleClearCache = async () => {
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto p-4 md:p-6 safe-area-bottom">
+  <div class="h-full overflow-y-auto p-4 md:p-6">
     <div class="mx-auto max-w-2xl">
       <h2 class="mb-6 text-xl font-semibold">应用设置</h2>
 

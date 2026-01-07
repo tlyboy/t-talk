@@ -12,12 +12,26 @@ html,
 body,
 #app {
   height: 100%;
+  overflow: hidden;
+}
+
+/* 防止移动端滚动穿透 */
+body {
+  overscroll-behavior: none;
+}
+
+/* 可滚动容器防止滚动链式传递 */
+.overflow-y-auto,
+.overflow-auto {
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* iOS 安全区域适配 */
 .safe-area-bottom {
   padding-bottom: env(safe-area-inset-bottom);
 }
+
 
 /* 禁用 Apple 设备输入框首字母自动大写和 CSS 大写转换 */
 /* iOS 防止输入框自动缩放（字体需 >= 16px） */

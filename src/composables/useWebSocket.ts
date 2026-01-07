@@ -265,10 +265,16 @@ export function useChatWebSocket() {
       return
     }
 
-    // 连接前更新 URL
-    wsUrl.value = getWsUrl()
-    console.log('[ws] 开始连接...', wsUrl.value)
-    open()
+    const url = getWsUrl()
+    console.log('[ws] 开始连接...', url)
+
+    // 如果 URL 相同（重连场景），手动调用 open()
+    // 如果 URL 不同，只设置 URL，让 VueUse 的 watch 自动触发连接
+    if (wsUrl.value === url) {
+      open()
+    } else {
+      wsUrl.value = url
+    }
   }
 
   // 断开连接

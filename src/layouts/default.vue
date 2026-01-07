@@ -4,7 +4,7 @@ const uiStore = useUiStore()
 </script>
 
 <template>
-  <div class="flex h-full">
+  <div class="flex h-full flex-col md:flex-row">
     <!-- 桌面端：左侧导航栏 -->
     <div
       class="hidden flex-col justify-between border-r border-[#DADADA] bg-[#EDEDED] px-2 py-4 md:flex dark:border-[#292929] dark:bg-[#121212]"
@@ -64,10 +64,7 @@ const uiStore = useUiStore()
     </div>
 
     <!-- 主内容区 -->
-    <div
-      class="flex-1 overflow-hidden md:pb-0"
-      :class="uiStore.isMobileChatView ? 'pb-0' : 'pb-14'"
-    >
+    <div class="min-h-0 flex-1 overflow-hidden">
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
@@ -75,10 +72,10 @@ const uiStore = useUiStore()
       </router-view>
     </div>
 
-    <!-- 移动端：底部导航栏（聊天视图时隐藏） -->
+    <!-- 移动端：底部导航栏（flex 布局，非 fixed） -->
     <div
-      v-show="!uiStore.isMobileChatView"
-      class="safe-area-bottom fixed right-0 bottom-0 left-0 z-50 flex border-t border-[#DADADA] bg-[#EDEDED] md:hidden dark:border-[#292929] dark:bg-[#121212]"
+      v-if="!uiStore.isMobileChatView"
+      class="safe-area-bottom flex shrink-0 border-t border-[#DADADA] bg-[#EDEDED] md:hidden dark:border-[#292929] dark:bg-[#121212]"
     >
       <RouterLink
         to="/"
