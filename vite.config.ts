@@ -10,6 +10,7 @@ import Components from 'unplugin-vue-components/vite'
 import Layouts from 'vite-plugin-vue-layouts'
 import { VueRouterAutoImports } from 'unplugin-vue-router'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import { VitePWA } from 'vite-plugin-pwa'
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -41,6 +42,32 @@ export default defineConfig(async () => ({
           importStyle: 'sass',
         }),
       ],
+    }),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: {
+        enabled: true,
+      },
+      manifest: {
+        name: 'T-Talk',
+        short_name: 'T-Talk',
+        description: 'T-Talk 即时通讯应用',
+        theme_color: '#ededed',
+        background_color: '#ededed',
+        display: 'standalone',
+        icons: [
+          {
+            src: 'pwa-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'pwa-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
+      },
     }),
   ],
   resolve: {

@@ -12,6 +12,7 @@ const userStore = useUserStore()
 const settingsStore = useSettingsStore()
 const messageStore = useMessageStore()
 const friendStore = useFriendStore()
+const uiStore = useUiStore()
 const { uploading, progress, upload, uploadAndGetMarkdown } = useUpload()
 
 const results = ref<any[]>([])
@@ -40,6 +41,20 @@ const summaryContent = ref('')
 const summarizing = ref(false)
 // 当前右键的消息
 const contextMessage = ref<any>(null)
+
+// 移动端视图状态
+const mobileView = ref<'list' | 'chat'>('list')
+const isMobile = ref(typeof window !== 'undefined' && window.innerWidth < 768)
+
+// 检测是否为移动端
+const checkMobile = () => {
+  isMobile.value = window.innerWidth < 768
+}
+
+// 返回聊天列表
+const backToList = () => {
+  mobileView.value = 'list'
+}
 
 const resultRef = useTemplateRef('resultRef')
 const textareaRef = useTemplateRef('textareaRef')
@@ -564,6 +579,11 @@ const copySummary = async () => {
 const handleSelectMessage = async (index: number) => {
   messageStore.current = index
 
+  // 移动端：切换到聊天视图
+  if (isMobile.value) {
+    mobileView.value = 'chat'
+  }
+
   // 如果消息列表为空，从服务器加载
   const chat = messageStore.currentMessage
   if (chat && chat.messages.length === 0) {
@@ -846,6 +866,10 @@ const opened = async () => {
 onMounted(async () => {
   await initMd()
 
+  // 初始化移动端检测
+  checkMobile()
+  window.addEventListener('resize', checkMobile)
+
   // 加载聊天列表
   chatListLoading.value = true
   try {
@@ -865,6 +889,10 @@ onMounted(async () => {
 
   useCopyCode()
   scrollResultToBottom()
+})
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkMobile)
 })
 
 onActivated(() => {
@@ -890,6 +918,15 @@ watch(
   },
   { deep: true },
 )
+
+// 同步移动端聊天视图状态到 UI store（控制底部导航栏显示）
+watch(
+  [isMobile, mobileView],
+  ([mobile, view]) => {
+    uiStore.isMobileChatView = mobile && view === 'chat'
+  },
+  { immediate: true },
+)
 </script>
 
 <template>
@@ -901,15 +938,19 @@ watch(
       class="hidden"
       @change="handleFileSelect"
     />
-    <div class="flex items-center">
+    <!-- 顶部栏：移动端根据视图切换显示，固定高度 56px -->
+    <div class="flex h-14">
+      <!-- 搜索栏：移动端列表视图显示，桌面端始终显示 -->
       <div
-        class="flex w-52 items-center gap-2 border-r border-b border-[#DADADA] bg-[#F7F7F7] px-2 py-4 dark:border-[#292929] dark:bg-[#191919]"
+        class="flex w-full md:w-52 items-center gap-2 border-b md:border-r border-[#DADADA] bg-[#F7F7F7] px-3 dark:border-[#292929] dark:bg-[#191919]"
+        :class="{ 'hidden': isMobile && mobileView === 'chat' }"
       >
         <el-input
           size="small"
           v-model="messageStore.search"
           placeholder="搜索"
           clearable
+          class="flex-1"
         >
           <template #prefix>
             <div class="i-carbon-search"></div>
@@ -923,26 +964,42 @@ watch(
         </el-button>
       </div>
 
+      <!-- 聊天标题栏：移动端聊天视图显示，桌面端始终显示 -->
       <div
-        class="flex h-full flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
+        class="flex flex-1 items-center justify-between border-b border-[#DADADA] px-4 dark:border-[#292929]"
+        :class="{ 'hidden': isMobile && mobileView === 'list' }"
       >
-        <div>
-          {{
-            messageStore.currentMessage?.displayName ||
-            messageStore.currentMessage?.title
-          }}
+        <div class="flex items-center gap-3">
+          <!-- 移动端返回按钮 -->
+          <button
+            v-if="isMobile"
+            @click="backToList"
+            class="icon-btn flex items-center justify-center"
+          >
+            <div class="i-carbon-arrow-left text-xl"></div>
+          </button>
+          <span class="text-base">
+            {{
+              messageStore.currentMessage?.displayName ||
+              messageStore.currentMessage?.title
+            }}
+          </span>
         </div>
-        <div
+        <button
           v-if="messageStore.currentMessage"
-          class="i-carbon-overflow-menu-horizontal icon-btn text-xl"
+          class="icon-btn flex items-center justify-center"
           @click="drawer = true"
-        ></div>
+        >
+          <div class="i-carbon-overflow-menu-horizontal text-xl"></div>
+        </button>
       </div>
     </div>
 
     <div class="flex flex-1 overflow-hidden">
+      <!-- 聊天列表：移动端全宽，桌面端固定宽度 -->
       <div
-        class="w-52 overflow-y-auto border-r border-[#DADADA] dark:border-[#292929]"
+        class="w-full md:w-52 overflow-y-auto border-r border-[#DADADA] dark:border-[#292929]"
+        :class="{ 'hidden': isMobile && mobileView === 'chat' }"
         v-loading="chatListLoading"
       >
         <div
@@ -974,7 +1031,14 @@ watch(
         />
       </div>
 
-      <div class="flex flex-1 flex-col overflow-hidden">
+      <!-- 消息区域：移动端列表视图时隐藏 -->
+      <div
+        class="flex-1 flex-col overflow-hidden"
+        :class="{
+          'hidden': isMobile && mobileView === 'list',
+          'flex': !isMobile || mobileView === 'chat'
+        }"
+      >
         <!-- 选择模式工具栏 -->
         <div
           v-if="selectMode"
@@ -1144,7 +1208,14 @@ watch(
       </div>
     </div>
 
-    <el-dialog v-model="dialogVisible" title="新建群聊" @opened="opened">
+    <el-dialog
+      v-model="dialogVisible"
+      title="新建群聊"
+      width="90%"
+      class="max-w-md!"
+      align-center
+      @opened="opened"
+    >
       <el-form
         ref="formRef"
         label-width="auto"
@@ -1486,7 +1557,13 @@ watch(
     </el-drawer>
 
     <!-- 邀请好友对话框 -->
-    <el-dialog v-model="inviteDialogVisible" title="邀请好友入群" width="400px">
+    <el-dialog
+      v-model="inviteDialogVisible"
+      title="邀请好友入群"
+      width="90%"
+      class="max-w-md!"
+      align-center
+    >
       <div
         v-if="availableFriendsToInvite.length === 0"
         class="py-4 text-center text-[#999]"
@@ -1534,7 +1611,9 @@ watch(
     <el-dialog
       v-model="summaryDialogVisible"
       title="AI 总结"
-      width="600px"
+      width="90%"
+      class="max-w-xl!"
+      align-center
       :close-on-click-modal="!summarizing"
       :close-on-press-escape="!summarizing"
     >

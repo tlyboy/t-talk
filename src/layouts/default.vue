@@ -1,15 +1,17 @@
 <script setup lang="ts">
 const userStore = useUserStore()
+const uiStore = useUiStore()
 </script>
 
 <template>
   <div class="flex h-full">
+    <!-- 桌面端：左侧导航栏 -->
     <div
-      class="flex flex-col justify-between border-r border-[#DADADA] bg-[#EDEDED] px-2 py-4 dark:border-[#292929] dark:bg-[#121212]"
+      class="hidden md:flex flex-col justify-between border-r border-[#DADADA] bg-[#EDEDED] px-2 py-4 dark:border-[#292929] dark:bg-[#121212]"
     >
-      <!-- 顶部：用户头像 -->
+      <!-- 顶部：用户头像/Logo -->
       <div class="flex flex-col items-center gap-4 text-xl">
-        <RouterLink to="/profile" class="block">
+        <RouterLink v-if="userStore.user.id" to="/profile" class="block">
           <UserAvatar
             :avatar="userStore.user.avatar"
             :name="userStore.user.nickname || userStore.user.username"
@@ -18,6 +20,12 @@ const userStore = useUserStore()
             :class="{ 'ring-2 ring-[#3498db]': $route.path === '/profile' }"
           />
         </RouterLink>
+        <img
+          v-else
+          src="@/assets/images/logo.png"
+          alt="T-Talk"
+          class="h-10 w-10"
+        />
 
         <RouterLink
           to="/"
@@ -55,12 +63,58 @@ const userStore = useUserStore()
       </div>
     </div>
 
-    <div class="flex-1 overflow-hidden">
+    <!-- 主内容区 -->
+    <div
+      class="flex-1 overflow-hidden md:pb-0"
+      :class="uiStore.isMobileChatView ? 'pb-0' : 'pb-14'"
+    >
       <router-view v-slot="{ Component }">
         <keep-alive>
           <component :is="Component" />
         </keep-alive>
       </router-view>
+    </div>
+
+    <!-- 移动端：底部导航栏（聊天视图时隐藏） -->
+    <div
+      v-show="!uiStore.isMobileChatView"
+      class="fixed bottom-0 left-0 right-0 z-50 flex md:hidden border-t border-[#DADADA] bg-[#EDEDED] dark:border-[#292929] dark:bg-[#121212] safe-area-bottom"
+    >
+      <RouterLink
+        to="/"
+        class="flex flex-1 flex-col items-center gap-1 py-2"
+        :class="$route.path === '/' ? 'text-[#3498db]' : 'text-gray-500'"
+      >
+        <div class="i-carbon-chat text-xl"></div>
+        <span class="text-xs">聊天</span>
+      </RouterLink>
+
+      <RouterLink
+        to="/user"
+        class="flex flex-1 flex-col items-center gap-1 py-2"
+        :class="$route.path === '/user' ? 'text-[#3498db]' : 'text-gray-500'"
+      >
+        <div class="i-carbon-user-multiple text-xl"></div>
+        <span class="text-xs">联系人</span>
+      </RouterLink>
+
+      <RouterLink
+        to="/profile"
+        class="flex flex-1 flex-col items-center gap-1 py-2"
+        :class="$route.path === '/profile' ? 'text-[#3498db]' : 'text-gray-500'"
+      >
+        <div class="i-carbon-user-avatar text-xl"></div>
+        <span class="text-xs">我的</span>
+      </RouterLink>
+
+      <RouterLink
+        to="/settings"
+        class="flex flex-1 flex-col items-center gap-1 py-2"
+        :class="$route.path === '/settings' ? 'text-[#3498db]' : 'text-gray-500'"
+      >
+        <div class="i-carbon-settings text-xl"></div>
+        <span class="text-xs">设置</span>
+      </RouterLink>
     </div>
   </div>
 </template>

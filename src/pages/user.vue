@@ -127,7 +127,7 @@ const handleProcessInvite = async (
 </script>
 
 <template>
-  <div class="flex h-full flex-col p-4" v-loading="pageLoading">
+  <div class="flex h-full flex-col p-2 md:p-4" v-loading="pageLoading">
     <el-tabs v-model="activeTab">
       <!-- 好友列表 -->
       <el-tab-pane label="好友" name="friends">

@@ -51,7 +51,7 @@ const logout = () => {
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto p-6">
+  <div class="h-full overflow-y-auto p-4 md:p-6">
     <div class="mx-auto max-w-md">
       <h2 class="mb-6 text-xl font-semibold">个人资料</h2>
 

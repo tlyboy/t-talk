@@ -14,6 +14,11 @@ body,
   height: 100%;
 }
 
+/* iOS 安全区域适配 */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
 /* 禁用 Apple 设备输入框首字母自动大写和 CSS 大写转换 */
 input,
 textarea,

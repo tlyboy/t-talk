@@ -50,14 +50,38 @@ const handleClearCache = async () => {
 </script>
 
 <template>
-  <div class="h-full overflow-y-auto p-6">
+  <div class="h-full overflow-y-auto p-4 md:p-6">
     <div class="mx-auto max-w-2xl">
       <h2 class="mb-6 text-xl font-semibold">应用设置</h2>
+
+      <!-- 通用设置 -->
+      <div class="mb-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
+        <h3 class="mb-4 flex items-center gap-2 text-base font-medium">
+          <div class="i-carbon-settings-adjust text-lg"></div>
+          通用
+        </h3>
+        <div class="flex items-center justify-between py-2">
+          <span>深色模式</span>
+          <DarkToggle />
+        </div>
+        <div class="flex items-center justify-between py-2">
+          <span>项目源码</span>
+          <a
+            href="https://github.com/tlyboy/t-talk"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex items-center gap-1 text-[#3498db]"
+          >
+            <div class="i-carbon-logo-github"></div>
+            GitHub
+          </a>
+        </div>
+      </div>
 
       <!-- 服务器设置 -->
       <div class="mb-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
         <h3 class="mb-4 flex items-center gap-2 text-base font-medium">
-          <div class="i-carbon-server"></div>
+          <div class="i-carbon-cloud text-lg"></div>
           服务器配置
         </h3>
         <el-form
@@ -79,7 +103,7 @@ const handleClearCache = async () => {
       <!-- AI 设置 -->
       <div class="mb-6 rounded-lg bg-white p-6 dark:bg-[#2C2C2C]">
         <h3 class="mb-4 flex items-center gap-2 text-base font-medium">
-          <div class="i-carbon-machine-learning-model"></div>
+          <div class="i-carbon-bot text-lg"></div>
           AI 配置
         </h3>
         <el-form
@@ -128,7 +152,7 @@ const handleClearCache = async () => {
       </div>
 
       <!-- 操作按钮 -->
-      <div class="flex gap-4">
+      <div class="flex flex-wrap gap-2 md:gap-4">
         <el-button type="primary" @click="onSubmit">
           <template #icon>
             <div class="i-carbon-save"></div>
