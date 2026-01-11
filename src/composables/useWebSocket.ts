@@ -86,7 +86,28 @@ export function useChatWebSocket() {
 
       case 'auth:error':
         isAuthenticated.value = false
-        connectionError.value = message.payload?.message || '认证失败'
+        const errorMessage = message.payload?.message || '认证失败'
+
+        // Token 过期，尝试刷新后重新认证
+        if (
+          errorMessage.includes('过期') ||
+          errorMessage.includes('expired') ||
+          errorMessage.includes('无效')
+        ) {
+          console.log('[ws] Token 可能过期，尝试刷新...')
+          userStore.refresh().then((newToken) => {
+            if (newToken) {
+              console.log('[ws] Token 已刷新，重新认证')
+              sendAuth()
+            } else {
+              connectionError.value = errorMessage
+              ElMessage.error('登录已过期，请重新登录')
+            }
+          })
+          return
+        }
+
+        connectionError.value = errorMessage
         ElMessage.error(connectionError.value!)
         break
 
