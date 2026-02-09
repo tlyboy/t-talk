@@ -2,15 +2,15 @@
 
 💬 T-Talk
 
-## Install
+## 安装
 
 ```bash
 git clone https://github.com/tlyboy/t-talk.git
 ```
 
-## Usage
+## 使用说明
 
-Requires [Rust](https://www.rust-lang.org/) to be installed.
+需要安装 [Rust](https://www.rust-lang.org/)。
 
 ```bash
 pnpm install
@@ -18,6 +18,6 @@ pnpm tauri dev
 pnpm tauri build
 ```
 
-## License
+## 使用许可
 
 [MIT](https://opensource.org/licenses/MIT) © Guany
