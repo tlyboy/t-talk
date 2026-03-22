@@ -1,7 +1,5 @@
 # T-Talk
 
-[中文](./README.zh-CN.md)
-
 A modern instant messaging desktop application built with Tauri 2.0 + React 19 + Supabase.
 
 ## Features

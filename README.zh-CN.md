@@ -1,7 +1,5 @@
 # T-Talk
 
-[English](./README.md)
-
 基于 Tauri 2.0 + React 19 + Supabase 构建的现代即时通讯桌面应用。
 
 ## 功能
